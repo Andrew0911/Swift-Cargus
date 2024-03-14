@@ -1,34 +1,41 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './style.scss'
+import AddPicture from './img/AddPicture.png'
+import RegisterBackground from './img/FundalRegister.jpg'
+import SwiftCargusLogo from './img/SwiftCargusLogo.png'
+import { Helmet } from 'react-helmet';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div>
+      <Helmet>
+        <title>Register</title>
+        <link rel="icon" href={SwiftCargusLogo} type="image/png" />
+      </Helmet>
+
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+      <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet" />
+
+      <div className='formContainer' style={{ backgroundImage: `url(${RegisterBackground})`}}>
+            <div className='formWrapper'>
+                <span className='logo'> Swift Cargus </span>
+                <span className='title'>Register</span>
+                <form>
+                    <input type='text' placeholder='Display Name'></input>
+                    <input type='email' placeholder='E-mail'></input>
+                    <input type='password' placeholder='Password'></input>
+                    <input type='file' id='file' style={{ display: 'none' }} />
+                    <label htmlFor='file'>
+                        <img src ={AddPicture} alt=''></img>
+                        <span> Add a profile picture</span>
+                    </label>
+                    <button>Register</button>
+                </form>
+                <p>Already have an account? <a href = '/login'> Login </a></p>
+            </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
   )
 }
 
