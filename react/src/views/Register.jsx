@@ -1,5 +1,4 @@
 import '../style.scss'
-import AddPicture from '../img/AddPicture.png'
 import RegisterBackground from '../img/FundalRegister.jpg'
 import SwiftCargusLogo from '../img/SwiftCargusLogo.png'
 import { Helmet } from 'react-helmet';
@@ -29,10 +28,7 @@ function Register() {
                     <input type='email' placeholder='E-mail'></input>
                     <input type='password' placeholder='Password'></input>
                     <input type='file' id='file' style={{ display: 'none' }} />
-                    <label htmlFor='file'>
-                        <img src ={AddPicture} alt=''></img>
-                        <span> Add a profile picture</span>
-                    </label>
+                    
                     <button>Register</button>
                 </form>
                 

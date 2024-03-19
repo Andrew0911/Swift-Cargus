@@ -3,8 +3,10 @@ import ItemsMenu from "../components/ItemsMenu";
 import SwiftCargusLogo from '../img/SwiftCargusLogo.png'
 import Menu from "../components/Menu";
 import Header from "../components/Header";
+import { useStateContext } from "../contexts/ContextProvider";
 
 export default function Dashboard() {
+  const { currentUser } = useStateContext();
   return (
     <div>
 
