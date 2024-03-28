@@ -160,11 +160,23 @@
         .menu {
             padding-left: 20px;
             padding-top: 20px;
-            flex: 1;
         }   
     }
 }
 
+.errors{
+    display: flex;
+    flex-direction: column;
+    padding-left: 10%;
+    padding-right: 10%;
+
+    div{
+        font-family: "Quicksand", sans-serif;
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+}
 
 body {
     margin: 0;

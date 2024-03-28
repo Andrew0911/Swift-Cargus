@@ -1,7 +1,9 @@
+import { Outlet } from "react-router-dom"
 
 function Menu() {
   return (
-    <div className = "menu"> Menu
+    <div className = "menu"> 
+      <Outlet/>
     </div>
   )
 }
