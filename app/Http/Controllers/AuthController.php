@@ -34,8 +34,8 @@ class AuthController extends Controller
         $credentials = $request->validated();
         if(!Auth::attempt($credentials)) {
             return response([
-                'error' => 'The provided credentials are not correct'
-            ], 422);
+                'error' => 'The provided credentials are incorrect'
+            ], 500);
         }
         $user = Auth::user();
         $token = $user->createToken('main')->plainTextToken;
@@ -48,7 +48,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = Auth::user();
         $user->currentAccessToken()->delete();
 

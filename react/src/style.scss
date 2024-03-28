@@ -121,8 +121,7 @@
             &:hover{
                 cursor: pointer;
             }
-        }
-        
+        }  
     }
 
     .menu-container {
@@ -169,6 +168,10 @@
     flex-direction: column;
     padding-left: 10%;
     padding-right: 10%;
+    font-family: "Quicksand", sans-serif;
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
 
     div{
         font-family: "Quicksand", sans-serif;

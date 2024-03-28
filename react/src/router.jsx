@@ -4,6 +4,8 @@ import Login from "./views/Login";
 import Dashboard from "./views/Dashboard";
 import GuestLayout from "./components/GuestLayout";
 import DefaultLayout from "./components/DefaultLayout";
+import AWB from "./components/AWB";
+import Tracking from "./components/Tracking";
 
 const router = createBrowserRouter([
     {
@@ -17,6 +19,14 @@ const router = createBrowserRouter([
             {
                 path: '/',
                 element: <Dashboard />
+            },
+            {
+                path: 'awb',
+                element: <AWB />
+            },
+            {
+                path: 'tracking',
+                element: <Tracking />
             }
         ]
     },
