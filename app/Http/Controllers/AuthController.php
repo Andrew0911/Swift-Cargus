@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -21,6 +23,12 @@ class AuthController extends Controller
             'email' => $data['email'],
             'password' => bcrypt($data['password'])
         ]);
+
+        $client = Client::create([
+            'UserId' => $user->id,
+            'Name' => $data['name']
+        ]);
+        Session::put('clientId', $client->ClientId);
         $token = $user->createToken('main')->plainTextToken;
         
         return response([
@@ -38,6 +46,10 @@ class AuthController extends Controller
             ], 500);
         }
         $user = Auth::user();
+
+        $client = Client::where('UserId', $user->id)->first();
+        Session::put('clientId', $client->ClientId);
+
         $token = $user->createToken('main')->plainTextToken;
 
         return response([
@@ -51,6 +63,7 @@ class AuthController extends Controller
         /** @var User $user */
         $user = Auth::user();
         $user->currentAccessToken()->delete();
+        Session::forget('clientId');
 
         return response([
             'success' => true
