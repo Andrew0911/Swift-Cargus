@@ -43,6 +43,8 @@
                 width: 250px;
                 border-bottom: 1px solid #87ceeb;
                 font-family: "Quicksand", sans-serif;
+                outline: none;
+                color: #135a76;
 
                 &::placeholder{
                 color: rgb(175, 175, 175);
@@ -156,6 +158,24 @@
             }
         }
 
+        .selectedtab{
+            padding-top: 10px;
+            padding-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 60px;
+            color: #ffb703;
+    
+            &:hover{
+                color: white;
+                background-color: #186f92;
+                cursor: pointer;
+            }
+        }
+
         .menu {
             flex:1;
             padding-left: 20px;
@@ -187,7 +207,105 @@
 {
     color: gray;
     font-size: 24px;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid lightgray;
+}
+
+.input-field
+{
+    outline: none;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    height: 3.5vh;
+    width: 15vw;
+    font-size: 16px;
+    font-family: "Quicksand", sans-serif;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 10px;
+
+    &:hover
+    {
+        border-color: #ffb703;
+    }
+
+}
+
+.above-input-field
+{
+    margin-bottom: 2px;
+    font-size: 14px;
+    color: #ffb703;
+    padding-left: 20px;
+}
+
+.awb-container
+{
+    display: flex;
+    gap: 30px;
+    margin-top: 50px;
+
+    .sender-container
+    {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(5px);
+        padding-bottom: 20px;
+        flex: 1;
+        border-radius: 5px;
+
+        .header-div
+        {
+            border-radius: 5px 5px 0px 0px;
+            padding: 10px;
+            background-color:#74788d;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .container-div
+        {
+            display: flex;
+            justify-content: space-between;
+            padding-left: 30px;
+            padding-right: 30px;
+
+        }
+    }
+
+    .recipient-container
+    {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(5px);
+        padding-bottom: 20px;
+        flex: 1;
+        border-radius: 5px;
+
+        .header-div
+        {
+            border-radius: 5px 5px 0px 0px;
+            padding: 10px;
+            background-color:#74788d;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .container-div
+        {
+            display: flex;
+            justify-content: space-between;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+    }
+}
+
+.link{
+    color: #ffb703;
+    text-decoration: none;
 }
 
 body {

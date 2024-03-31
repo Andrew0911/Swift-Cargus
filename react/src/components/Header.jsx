@@ -11,11 +11,14 @@ function Header() {
     await axiosClient.post('/logout');
     setCurrentUser({});
     setUserToken(null);
+    localStorage.removeItem('selectedTab');
   };
 
   return (
     <div className = "header">
-        Swift Cargus
+        <div>
+          <span>Swift</span> <span style={{color: '#ffb703'}}>Cargus</span>
+        </div>
         <div className = 'buttons'>
             <img 
             src = {DefaultAvatar} 

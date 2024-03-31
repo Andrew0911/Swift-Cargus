@@ -51,7 +51,11 @@ export default function Login() {
 
                 <div className='formWrapper'>
 
-                    <span className='logo'> Swift Cargus </span>
+                    <span className='logo'> 
+                      <div>
+                        <span>Swift</span> <span style={{color: '#ffb703'}}>Cargus</span>
+                      </div>
+                    </span>
                     <span className='title'>Login</span>
                     <form onSubmit={submitLogin}>
                         <input 
@@ -85,7 +89,7 @@ export default function Login() {
                     </div>
                     }
 
-                    <p>Do not have an account? <a href = '/register'> Register </a></p>
+                    <p>Do not have an account? <a className = 'link' href = '/register'> Register </a></p>
                 </div>
             </div>
         </div>

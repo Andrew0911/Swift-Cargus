@@ -48,7 +48,11 @@ function Register() {
 
             <div className='formWrapper'>
 
-                <span className='logo'> Swift Cargus </span>
+                <span className='logo'>
+                  <div>
+                    <span>Swift</span> <span style={{color: '#ffb703'}}>Cargus</span>
+                  </div> 
+                </span>
                 <span className='title'>Register</span>
 
                 <form onSubmit={submitSignup}>
@@ -84,7 +88,7 @@ function Register() {
                   </div>
                 }
 
-                <p>Already have an account? <a href = '/login'> Login </a></p>
+                <p>Already have an account? <a className = 'link' href = '/login'> Login </a></p>
             </div>
       </div>
       </div>
