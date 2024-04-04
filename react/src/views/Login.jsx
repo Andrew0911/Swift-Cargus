@@ -89,7 +89,7 @@ export default function Login() {
                     </div>
                     }
 
-                    <p>Do not have an account? <a className = 'link' href = '/register'> Register </a></p>
+                    <p>Don't have an account? <a className = 'link' href = '/register'> Register </a></p>
                 </div>
             </div>
         </div>

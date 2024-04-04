@@ -2,6 +2,7 @@ import SignOut from '../img/SignOut.png'
 import DefaultAvatar from '../img/DefaultAvatar.png'
 import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios';
+import router from '../router';
 
 function Header() {
   const { setCurrentUser, setUserToken } = useStateContext();
