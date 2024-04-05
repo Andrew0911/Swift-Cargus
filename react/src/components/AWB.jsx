@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Helmet } from "react-helmet";
 import SwiftCargusLogo from '../img/SwiftCargusLogo.png'
 import Field from './Field';
-import DropDownField from './DropDownField';
+import { Dropdown } from './Dropdown.jsx';
+import axiosClient from '../axios.js';
 
 function AWB() {
 
@@ -23,6 +24,70 @@ function AWB() {
   const [recipientLocality, setRecipientLocality] = useState('');
   const [recipientStreet, setRecipientStreet] = useState('');
   const [recipientZipCode, setRecipientZipCode] = useState('');
+
+  const [allCounties, setAllCounties] = useState([]);
+  const [allSenderLocalities, setAllSenderLocalities] = useState([]);
+  const [allRecipientLocalities, setAllRecipientLocalities] = useState([]);
+
+  // Effect to fetch all counties once
+  useEffect(() => {
+    const fetchAllCounties = async () => {
+      try {
+        const { data: countiesData } = await axiosClient.get('/all-counties');
+        setAllCounties(countiesData);
+      } catch (error) {
+        console.error('Error fetching all counties:', error);
+      }
+    };
+
+    fetchAllCounties();
+  }, []);
+
+  // Get sender localities when senderCounty changes
+  useEffect(() => {
+    setSenderLocality('');
+    const fetchSenderLocalities = async () => {
+      if (!senderCounty) return; 
+
+      try {
+        const senderCountyObj = allCounties.find(county => county.Name === senderCounty);
+        if (!senderCountyObj) return; 
+
+        const senderCountyId = senderCountyObj.CountyId;
+        const { data: senderLocalitiesData } = await axiosClient.get('/all-localities-by-county', {
+          params: { countyId: senderCountyId }
+        });
+        setAllSenderLocalities(senderLocalitiesData);
+      } catch (error) {
+        console.error('Error fetching sender localities:', error);
+      }
+    };
+
+    fetchSenderLocalities();
+  }, [senderCounty]); 
+
+    // Get recipient localities when recipientCounty changes
+    useEffect(() => {
+      setRecipientLocality('');
+      const fetchRecipientLocalities = async () => {
+        if (!recipientCounty) return;
+  
+        try {
+          const recipientCountyObj = allCounties.find(county => county.Name === recipientCounty);
+          if (!recipientCountyObj) return;
+  
+          const recipientCountyId = recipientCountyObj.CountyId;
+          const { data: recipientLocalitiesData } = await axiosClient.get('/all-localities-by-county', {
+            params: { countyId: recipientCountyId }
+          });
+          setAllRecipientLocalities(recipientLocalitiesData);
+        } catch (error) {
+          console.error('Error fetching recipient localities:', error);
+        }
+      };
+  
+      fetchRecipientLocalities();
+    }, [recipientCounty]); // Run when senderCounty or allCounties changes
 
   const submitAWB = async (ev) => {
     ev.preventDefault();
@@ -74,16 +139,18 @@ function AWB() {
 
             <div className='heading'> Address Details </div>
             <div className='details-div'>
-              
-              <DropDownField
-                aboveFieldText = 'County*'
+
+              <Dropdown
+                aboveFieldText='County*'
                 fieldText = {senderCounty}
                 setFieldText = {setSenderCounty}
+                menu={allCounties.map(county => county.Name)}
               />
-              <DropDownField
-                aboveFieldText = 'Locality*'
+              <Dropdown
+                aboveFieldText='Locality*'
                 fieldText = {senderLocality}
                 setFieldText = {setSenderLocality}
+                menu={senderCounty ? (allSenderLocalities.map(locality => locality.Name)) : ['No locality available']}
               />
               <Field
                 aboveFieldText = 'Street'
@@ -136,15 +203,17 @@ function AWB() {
             <div className='heading'> Address Details </div>
             <div className='details-div'>
               
-              <DropDownField
-                aboveFieldText = 'County*'
+              <Dropdown
+                aboveFieldText='County*'
                 fieldText = {recipientCounty}
                 setFieldText = {setRecipientCounty}
+                menu={allCounties.map(county => county.Name)}
               />
-              <DropDownField
-                aboveFieldText = 'Locality*'
+              <Dropdown
+                aboveFieldText='Locality*'
                 fieldText = {recipientLocality}
                 setFieldText = {setRecipientLocality}
+                menu={recipientCounty ? allRecipientLocalities.map(locality => locality.Name) : ['No locality available']}
               />
               <Field
                 aboveFieldText = 'Street'
