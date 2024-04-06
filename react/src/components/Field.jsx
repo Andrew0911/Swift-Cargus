@@ -1,7 +1,7 @@
 import React from 'react'
 
 function Field(props) {
-    const { aboveFieldText, fieldText, setFieldText, fieldType } = props;
+    const { aboveFieldText, fieldText, setFieldText, fieldType, placeholder } = props;
     return (
         <div>
             <p className='above-input-field'> {aboveFieldText} </p>
@@ -10,6 +10,7 @@ function Field(props) {
                 type={fieldType} 
                 value={fieldText} 
                 onChange={ev => setFieldText(ev.target.value)}
+                placeholder={placeholder + ' ' + aboveFieldText.toLowerCase() + '...'}
             />
         </div>
     )

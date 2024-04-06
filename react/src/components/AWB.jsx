@@ -4,6 +4,8 @@ import SwiftCargusLogo from '../img/SwiftCargusLogo.png'
 import Field from './Field';
 import { Dropdown } from './Dropdown.jsx';
 import axiosClient from '../axios.js';
+import Toggle from './Toggle.jsx';
+import Checkbox from '@mui/material/Checkbox';
 
 function AWB() {
 
@@ -12,7 +14,10 @@ function AWB() {
   const [senderPhone, setSenderPhone] = useState('');
   const [senderEmail, setSenderEmail] = useState('');
   const [senderCounty, setSenderCounty] = useState('');
+  const [senderCountyId, setSenderCountyId] = useState(0);
   const [senderLocality, setSenderLocality] = useState('');
+  const [senderLocalityId, setSenderLocalityId] = useState(0);
+
   const [senderStreet, setSenderStreet] = useState('');
   const [senderZipCode, setSenderZipCode] = useState('');
   
@@ -21,13 +26,22 @@ function AWB() {
   const [recipientPhone, setRecipientPhone] = useState('');
   const [recipientEmail, setRecipientEmail] = useState('');
   const [recipientCounty, setRecipientCounty] = useState('');
+  const [recipientCountyId, setRecipientCountyId] = useState(0);
   const [recipientLocality, setRecipientLocality] = useState('');
+  const [recipientLocalityId, setRecipientLocalityId] = useState(0);
   const [recipientStreet, setRecipientStreet] = useState('');
   const [recipientZipCode, setRecipientZipCode] = useState('');
 
   const [allCounties, setAllCounties] = useState([]);
   const [allSenderLocalities, setAllSenderLocalities] = useState([]);
   const [allRecipientLocalities, setAllRecipientLocalities] = useState([]);
+
+  const [standardServiceType, setStandardServiceType] = useState(false);
+  const [heavyServiceType, setHeavyServiceType] = useState(false);
+
+  const [standardServiceOptions, setStandardServiceOptions] = useState([]);
+  const [heavyServiceOptions, setHeavyServiceOptions] = useState([]);
+
 
   // Effect to fetch all counties once
   useEffect(() => {
@@ -46,6 +60,7 @@ function AWB() {
   // Get sender localities when senderCounty changes
   useEffect(() => {
     setSenderLocality('');
+    setSenderLocalityId(0);
     const fetchSenderLocalities = async () => {
       if (!senderCounty) return; 
 
@@ -69,6 +84,7 @@ function AWB() {
     // Get recipient localities when recipientCounty changes
     useEffect(() => {
       setRecipientLocality('');
+      setRecipientLocalityId(0);
       const fetchRecipientLocalities = async () => {
         if (!recipientCounty) return;
   
@@ -89,6 +105,38 @@ function AWB() {
       fetchRecipientLocalities();
     }, [recipientCounty]); // Run when senderCounty or allCounties changes
 
+    useEffect(() => {
+      const fetchStandardServiceOptions = async () => {
+        if (!standardServiceType) return;
+        try {
+          const { standardServiceOptions } = await axiosClient.get('/service-options', {
+            params : {serviceId: 1}
+          });
+          setStandardServiceOptions(standardServiceOptions);
+        } catch (error) {
+          console.error('Error fetching standard service options:', error);
+        }
+      };
+  
+      fetchStandardServiceOptions();
+    }, [standardServiceType]);
+
+    useEffect(() => {
+      const fetchHeavyServiceOptions = async () => {
+        if (!heavyServiceType) return;
+        try {
+          const { heavyServiceOptions } = await axiosClient.get('/service-options', {
+            params : {serviceId: 2}
+          });
+          setHeavyServiceOptions(heavyServiceOptions);
+        } catch (error) {
+          console.error('Error fetching heavy service options:', error);
+        }
+      };
+  
+      fetchHeavyServiceOptions();
+    }, [heavyServiceType]);
+
   const submitAWB = async (ev) => {
     ev.preventDefault();
   }
@@ -104,131 +152,212 @@ function AWB() {
 
       <form onSubmit={submitAWB}>
         <div className='awb-container'>
-          <div className='person-container'>
+          <div className = 'sender-and-recipient-section'>
+            <div className='person-container'>
 
-            <div className='header-div'> Sender Information </div>
-            
-            <div className='heading'> Contact </div>
-            <div className='details-div'>
-            
-              <Field
-                aboveFieldText = 'Name'
-                fieldText = {senderName}
-                setFieldText = {setSenderName}
-                type = 'text'
-              />
-              <Field
-                aboveFieldText = 'Contact Person'
-                fieldText = {senderContactPerson}
-                setFieldText = {setSenderContactPerson}
-                type = 'text'
-              /> 
-              <Field
-                aboveFieldText = 'Email'
-                fieldText = {senderEmail}
-                setFieldText = {setSenderEmail}
-                type = 'email'
-              />
-              <Field
-                aboveFieldText = 'Phone'
-                fieldText = {senderPhone}
-                setFieldText = {setSenderPhone}
-                type = 'text'
-              />
+              <div className='header-div'> Sender Information </div>
+              
+              <div className='heading'> Contact </div>
+              <div className='details-div'>
+              
+                <Field
+                  aboveFieldText = 'Name'
+                  fieldText = {senderName}
+                  setFieldText = {setSenderName}
+                  type = 'text'
+                  placeholder = 'Sender'
+                />
+                <Field
+                  aboveFieldText = 'Contact Person'
+                  fieldText = {senderContactPerson}
+                  setFieldText = {setSenderContactPerson}
+                  type = 'text'
+                  placeholder = 'Sender'
+                /> 
+                <Field
+                  aboveFieldText = 'Email'
+                  fieldText = {senderEmail}
+                  setFieldText = {setSenderEmail}
+                  type = 'email'
+                  placeholder = 'Sender'
+                />
+                <Field
+                  aboveFieldText = 'Phone'
+                  fieldText = {senderPhone}
+                  setFieldText = {setSenderPhone}
+                  type = 'text'
+                  placeholder = 'Sender'
+                />
+              </div>
+
+              <div className='heading'> Address Details </div>
+              <div className='details-div'>
+
+                <Dropdown
+                  aboveFieldText='County*'
+                  fieldText = {senderCounty}
+                  setFieldText = {setSenderCounty}
+                  menu={allCounties.map(county => county.Name)}
+                  setFieldId = {setSenderCountyId}
+                  menuId={allCounties.map(county => county.CountyId)}
+                />
+                <Dropdown
+                  aboveFieldText='Locality*'
+                  fieldText = {senderLocality}
+                  setFieldText = {setSenderLocality}
+                  menu={senderCounty ? (allSenderLocalities.map(locality => locality.Name)) : ['No locality available']}
+                  setFieldId = {setSenderLocalityId}
+                  menuId={allSenderLocalities.map(locality => locality.LocalityId)}
+                />
+                <Field
+                  aboveFieldText = 'Street'
+                  fieldText = {senderStreet}
+                  setFieldText = {setSenderStreet}
+                  type = 'text'
+                  placeholder = 'Sender'
+                />
+                <Field
+                  aboveFieldText = 'Zip Code'
+                  fieldText = {senderZipCode}
+                  setFieldText = {setSenderZipCode}
+                  type = 'text'
+                  placeholder = 'Sender'
+                />
+              </div>
             </div>
 
-            <div className='heading'> Address Details </div>
-            <div className='details-div'>
+            <div className='person-container'>
+              
+              <div className='header-div'> Recipient Information </div>
+              
+              <div className='heading'> Contact </div>
+              <div className='details-div'>
+                
+                <Field
+                  aboveFieldText = 'Name'
+                  fieldText = {recipientName}
+                  setFieldText = {setRecipientName}
+                  type = 'text'
+                  placeholder = 'Recipient'
+                />
+                <Field
+                  aboveFieldText = 'Contact Person'
+                  fieldText = {recipientContactPerson}
+                  setFieldText = {setRecipientContactPerson}
+                  type = 'text'
+                  placeholder = 'Recipient'
+                />
+                <Field
+                  aboveFieldText = 'Email'
+                  fieldText = {recipientEmail}
+                  setFieldText = {setRecipientEmail}
+                  type = 'email'
+                  placeholder = 'Recipient'
+                />
+                <Field
+                  aboveFieldText = 'Phone'
+                  fieldText = {recipientPhone}
+                  setFieldText = {setRecipientPhone}
+                  type = 'text'
+                  placeholder = 'Recipient'
+                />
+              </div>
 
-              <Dropdown
-                aboveFieldText='County*'
-                fieldText = {senderCounty}
-                setFieldText = {setSenderCounty}
-                menu={allCounties.map(county => county.Name)}
-              />
-              <Dropdown
-                aboveFieldText='Locality*'
-                fieldText = {senderLocality}
-                setFieldText = {setSenderLocality}
-                menu={senderCounty ? (allSenderLocalities.map(locality => locality.Name)) : ['No locality available']}
-              />
-              <Field
-                aboveFieldText = 'Street'
-                fieldText = {senderStreet}
-                setFieldText = {setSenderStreet}
-                type = 'text'
-              />
-              <Field
-                aboveFieldText = 'Zip Code'
-                fieldText = {senderZipCode}
-                setFieldText = {setSenderZipCode}
-                type = 'text'
-              />
+              <div className='heading'> Address Details </div>
+              <div className='details-div'>
+
+                <Dropdown
+                  aboveFieldText='County*'
+                  fieldText = {recipientCounty}
+                  setFieldText = {setRecipientCounty}
+                  menu={allCounties.map(county => county.Name)}
+                  setFieldId = {setRecipientCountyId}
+                  menuId={allCounties.map(county => county.CountyId)}
+                />
+                <Dropdown
+                  aboveFieldText='Locality*'
+                  fieldText = {recipientLocality}
+                  setFieldText = {setRecipientLocality}
+                  menu={recipientCounty ? allRecipientLocalities.map(locality => locality.Name) : ['No locality available']}
+                  setFieldId = {setRecipientLocalityId}
+                  menuId={allRecipientLocalities.map(locality => locality.LocalityId)}
+                />
+                <Field
+                  aboveFieldText = 'Street'
+                  fieldText = {recipientStreet}
+                  setFieldText = {setRecipientStreet}
+                  type = 'text'
+                  placeholder = 'Recipient'
+                />
+                <Field
+                  aboveFieldText = 'Zip Code'
+                  fieldText = {recipientZipCode}
+                  setFieldText = {setRecipientZipCode}
+                  type = 'text'
+                  placeholder = 'Recipient'
+                />
+              </div>
             </div>
           </div>
 
-          <div className='person-container'>
-            
-            <div className='header-div'> Recipient Information </div>
-            
-            <div className='heading'> Contact </div>
-            <div className='details-div'>
-              
-              <Field
-                aboveFieldText = 'Name'
-                fieldText = {recipientName}
-                setFieldText = {setRecipientName}
-                type = 'text'
-              />
-              <Field
-                aboveFieldText = 'Contact Person'
-                fieldText = {recipientContactPerson}
-                setFieldText = {setRecipientContactPerson}
-                type = 'text'
-              />
-              <Field
-                aboveFieldText = 'Email'
-                fieldText = {recipientEmail}
-                setFieldText = {setRecipientEmail}
-                type = 'email'
-              />
-              <Field
-                aboveFieldText = 'Phone'
-                fieldText = {recipientPhone}
-                setFieldText = {setRecipientPhone}
-                type = 'text'
-              />
-            </div>
+          <br/> <br/> <br/> 
+          <div>
+            <div className='person-container'>
 
-            <div className='heading'> Address Details </div>
-            <div className='details-div'>
-              
-              <Dropdown
-                aboveFieldText='County*'
-                fieldText = {recipientCounty}
-                setFieldText = {setRecipientCounty}
-                menu={allCounties.map(county => county.Name)}
-              />
-              <Dropdown
-                aboveFieldText='Locality*'
-                fieldText = {recipientLocality}
-                setFieldText = {setRecipientLocality}
-                menu={recipientCounty ? allRecipientLocalities.map(locality => locality.Name) : ['No locality available']}
-              />
-              <Field
-                aboveFieldText = 'Street'
-                fieldText = {recipientStreet}
-                setFieldText = {setRecipientStreet}
-                type = 'text'
-              />
-              <Field
-                aboveFieldText = 'Zip Code'
-                fieldText = {recipientZipCode}
-                setFieldText = {setRecipientZipCode}
-                type = 'text'
-              />
+              <div className='header-div'> Delivery Details </div>
+
+              <div className='heading'> Expedition Service Type </div>
+
+              <div className='checkboxes'>
+                
+                <div className='checkbox-container'>
+                  <Toggle
+                    value={standardServiceType}
+                    setValue={setStandardServiceType}
+                    siblingValue={heavyServiceType}
+                    setSiblingValue={setHeavyServiceType}
+                  />
+                  
+                  <div className='inline'>
+                    Standard Transport 
+                    <p className='info' value='For shipments weighing up to 30kg'> &#x2728; </p>
+                  </div>
+                </div>
+
+                <div className='checkbox-container'>
+                  
+                  <Toggle
+                    value={heavyServiceType}
+                    setValue={setHeavyServiceType}
+                    siblingValue={standardServiceType}
+                    setSiblingValue={setStandardServiceType}
+                  />
+
+                  <div className='inline'>
+                    Heavy Transport 
+                    <p className='info' value='For shipments weighing over 30kg'> &#x2728; </p>
+                  </div>
+                </div>
+
+              </div>
+
+              <div className='heading'> Expedition Options </div>
+              <div className='details-div'>
+
+                {standardServiceType &&
+                  <Checkbox color="default" sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}/>
+                }
+
+                {heavyServiceType &&
+                  <Checkbox color="default" sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}/>
+                }
+
+
+              </div>
             </div>
           </div>
+
+          <br/> <br/> <br/>
         </div>
       </form>
     </>

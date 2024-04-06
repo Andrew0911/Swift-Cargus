@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 
-export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu }) => {
+export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFieldId, menuId}) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(!open);
@@ -41,6 +41,7 @@ export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu }) => {
                                 onClick={() => {
                                 handleOpen();
                                 setFieldText(menuItem);
+                                setFieldId(menuId[index]);
                             }}
                             >
                             {menuItem}

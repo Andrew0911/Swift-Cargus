@@ -22,9 +22,9 @@ function Header() {
         </div>
         <div className = 'buttons'>
             <img 
-            src = {DefaultAvatar} 
-            alt = ''
-            title="Profile"
+              src = {DefaultAvatar} 
+              alt = ''
+              title="Profile"
             />
             <img
               src = {SignOut}
