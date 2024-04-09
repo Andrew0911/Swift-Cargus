@@ -5,7 +5,8 @@ import Field from './Field';
 import { Dropdown } from './Dropdown.jsx';
 import axiosClient from '../axios.js';
 import Toggle from './Toggle.jsx';
-import Checkbox from '@mui/material/Checkbox';
+import Option from './Option.jsx';
+import Warning from '../img/Warning.png'
 
 function AWB() {
 
@@ -39,11 +40,9 @@ function AWB() {
   const [standardServiceType, setStandardServiceType] = useState(false);
   const [heavyServiceType, setHeavyServiceType] = useState(false);
 
-  const [standardServiceOptions, setStandardServiceOptions] = useState([]);
-  const [heavyServiceOptions, setHeavyServiceOptions] = useState([]);
+  const [serviceOptions, setServiceOptions] = useState([]);
 
-
-  // Effect to fetch all counties once
+  // Effect to fetch all counties
   useEffect(() => {
     const fetchAllCounties = async () => {
       try {
@@ -81,61 +80,54 @@ function AWB() {
     fetchSenderLocalities();
   }, [senderCounty]); 
 
-    // Get recipient localities when recipientCounty changes
-    useEffect(() => {
-      setRecipientLocality('');
-      setRecipientLocalityId(0);
-      const fetchRecipientLocalities = async () => {
-        if (!recipientCounty) return;
+  // Get recipient localities when recipientCounty changes
+  useEffect(() => {
+    setRecipientLocality('');
+    setRecipientLocalityId(0);
+    const fetchRecipientLocalities = async () => {
+      if (!recipientCounty) return;
   
-        try {
-          const recipientCountyObj = allCounties.find(county => county.Name === recipientCounty);
-          if (!recipientCountyObj) return;
+      try {
+        const recipientCountyObj = allCounties.find(county => county.Name === recipientCounty);
+        if (!recipientCountyObj) return;
   
-          const recipientCountyId = recipientCountyObj.CountyId;
-          const { data: recipientLocalitiesData } = await axiosClient.get('/all-localities-by-county', {
-            params: { countyId: recipientCountyId }
-          });
-          setAllRecipientLocalities(recipientLocalitiesData);
-        } catch (error) {
-          console.error('Error fetching recipient localities:', error);
-        }
-      };
+        const recipientCountyId = recipientCountyObj.CountyId;
+        const { data: recipientLocalitiesData } = await axiosClient.get('/all-localities-by-county', {
+          params: { countyId: recipientCountyId }
+        });
+        setAllRecipientLocalities(recipientLocalitiesData);
+      } catch (error) {
+        console.error('Error fetching recipient localities:', error);
+      }
+    };
   
-      fetchRecipientLocalities();
-    }, [recipientCounty]); // Run when senderCounty or allCounties changes
+    fetchRecipientLocalities();
+  }, [recipientCounty]);
 
-    useEffect(() => {
-      const fetchStandardServiceOptions = async () => {
-        if (!standardServiceType) return;
-        try {
-          const { standardServiceOptions } = await axiosClient.get('/service-options', {
+  // Get Service options according to selected service
+  useEffect(() => {
+    const fetchServiceOptions = async () => {
+      setServiceOptions([]);
+      if (!standardServiceType && !heavyServiceType) return;
+      try {
+        if(standardServiceType){
+          const { data: serviceOptions } = await axiosClient.get('/service-options', {
             params : {serviceId: 1}
           });
-          setStandardServiceOptions(standardServiceOptions);
-        } catch (error) {
-          console.error('Error fetching standard service options:', error);
-        }
-      };
-  
-      fetchStandardServiceOptions();
-    }, [standardServiceType]);
-
-    useEffect(() => {
-      const fetchHeavyServiceOptions = async () => {
-        if (!heavyServiceType) return;
-        try {
-          const { heavyServiceOptions } = await axiosClient.get('/service-options', {
+          setServiceOptions(serviceOptions);
+        } else {
+          const { data: serviceOptions } = await axiosClient.get('/service-options', {
             params : {serviceId: 2}
           });
-          setHeavyServiceOptions(heavyServiceOptions);
-        } catch (error) {
-          console.error('Error fetching heavy service options:', error);
+          setServiceOptions(serviceOptions);
         }
-      };
+      } catch (error) {
+        console.error('Error fetching service options:', error);
+      }
+    };
   
-      fetchHeavyServiceOptions();
-    }, [heavyServiceType]);
+    fetchServiceOptions();
+  }, [standardServiceType, heavyServiceType]);
 
   const submitAWB = async (ev) => {
     ev.preventDefault();
@@ -205,7 +197,7 @@ function AWB() {
                   aboveFieldText='Locality*'
                   fieldText = {senderLocality}
                   setFieldText = {setSenderLocality}
-                  menu={senderCounty ? (allSenderLocalities.map(locality => locality.Name)) : ['No locality available']}
+                  menu={senderCounty ? (allSenderLocalities.map(locality => locality.Name)) : ['No localities available']}
                   setFieldId = {setSenderLocalityId}
                   menuId={allSenderLocalities.map(locality => locality.LocalityId)}
                 />
@@ -278,7 +270,7 @@ function AWB() {
                   aboveFieldText='Locality*'
                   fieldText = {recipientLocality}
                   setFieldText = {setRecipientLocality}
-                  menu={recipientCounty ? allRecipientLocalities.map(locality => locality.Name) : ['No locality available']}
+                  menu={recipientCounty ? allRecipientLocalities.map(locality => locality.Name) : ['No localities available']}
                   setFieldId = {setRecipientLocalityId}
                   menuId={allRecipientLocalities.map(locality => locality.LocalityId)}
                 />
@@ -342,16 +334,52 @@ function AWB() {
               </div>
 
               <div className='heading'> Expedition Options </div>
+              <br/><br/>
+
+              {/* Warning banner */}
+              {serviceOptions.length === 0 && standardServiceType === false && heavyServiceType === false &&
+                <div className='options-unavailable-banner'>
+                  <img src={Warning}/>
+                  <div>
+                     The delivery options will be displayed after selecting a service type
+                  </div>
+                </div>
+              }
+
+              {/* Loading Skeletons */}
+              {serviceOptions.length === 0 && (standardServiceType || heavyServiceType) &&
+                <div className='skeleton-options-container'>
+                  <div className='option-container skeleton'></div>
+                  <div className='option-container skeleton'></div>
+                  <div className='option-container skeleton'></div>
+                  <div className='option-container skeleton'></div>
+                </div>
+              }
+
+              {/* Options Section */}
               <div className='details-div'>
 
                 {standardServiceType &&
-                  <Checkbox color="default" sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}/>
+                  <div className='options-container'> 
+                    {serviceOptions.map(option => (
+                      <Option
+                        name = {option.Name}
+                        description = {option.Description}
+                      />
+                    ))}
+                  </div>
                 }
 
                 {heavyServiceType &&
-                  <Checkbox color="default" sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}/>
+                  <div className='options-container'> 
+                    {serviceOptions.map(option => (
+                      <Option
+                        name = {option.Name}
+                        description = {option.Description}
+                      />
+                    ))}
+                  </div>
                 }
-
 
               </div>
             </div>

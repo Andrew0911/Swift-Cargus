@@ -34,7 +34,7 @@ export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFie
                 <ul className="dropdown-menu">
                 {menu.map((menuItem, index) => (
                     <li key={index} className="menu-item">
-                        {menuItem == 'No locality available' && aboveFieldText.replace(/\*/g, '').toLowerCase() == 'locality' ?
+                        {menuItem == 'No localities available' && aboveFieldText.replace(/\*/g, '').toLowerCase() == 'locality' ?
                             
                             (<button disabled> {menuItem} </button>) : 
                             (<button
