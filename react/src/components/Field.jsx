@@ -10,7 +10,7 @@ function Field(props) {
                 type={fieldType} 
                 value={fieldText} 
                 onChange={ev => setFieldText(ev.target.value)}
-                placeholder={placeholder + ' ' + aboveFieldText.toLowerCase() + '...'}
+                placeholder={placeholder + ' ' + aboveFieldText.replace(/\*/g, '').toLowerCase() + '...'}
             />
         </div>
     )

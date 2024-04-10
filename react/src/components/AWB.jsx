@@ -7,6 +7,7 @@ import axiosClient from '../axios.js';
 import Toggle from './Toggle.jsx';
 import Option from './Option.jsx';
 import Warning from '../img/Warning.png'
+import QuantityField from './QuantityField.jsx';
 
 function AWB() {
 
@@ -39,9 +40,14 @@ function AWB() {
 
   const [standardServiceType, setStandardServiceType] = useState(false);
   const [heavyServiceType, setHeavyServiceType] = useState(false);
+  const [selectedServiceId, setSelectedServiceId] = useState(0);
 
   const [serviceOptions, setServiceOptions] = useState([]);
+  const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
 
+  const [packageNo, setPackageNo] = useState(1);
+  const [weight, setWeight] = useState(1);
+  
   // Effect to fetch all counties
   useEffect(() => {
     const fetchAllCounties = async () => {
@@ -108,14 +114,19 @@ function AWB() {
   useEffect(() => {
     const fetchServiceOptions = async () => {
       setServiceOptions([]);
+      setSelectedOptionsArray([]);
       if (!standardServiceType && !heavyServiceType) return;
       try {
         if(standardServiceType){
+          setWeight(1);
+          setSelectedServiceId(1);
           const { data: serviceOptions } = await axiosClient.get('/service-options', {
             params : {serviceId: 1}
           });
           setServiceOptions(serviceOptions);
         } else {
+          setWeight(30);
+          setSelectedServiceId(2);
           const { data: serviceOptions } = await axiosClient.get('/service-options', {
             params : {serviceId: 2}
           });
@@ -153,7 +164,7 @@ function AWB() {
               <div className='details-div'>
               
                 <Field
-                  aboveFieldText = 'Name'
+                  aboveFieldText = 'Name*'
                   fieldText = {senderName}
                   setFieldText = {setSenderName}
                   type = 'text'
@@ -167,14 +178,14 @@ function AWB() {
                   placeholder = 'Sender'
                 /> 
                 <Field
-                  aboveFieldText = 'Email'
+                  aboveFieldText = 'Email*'
                   fieldText = {senderEmail}
                   setFieldText = {setSenderEmail}
                   type = 'email'
                   placeholder = 'Sender'
                 />
                 <Field
-                  aboveFieldText = 'Phone'
+                  aboveFieldText = 'Phone*'
                   fieldText = {senderPhone}
                   setFieldText = {setSenderPhone}
                   type = 'text'
@@ -202,7 +213,7 @@ function AWB() {
                   menuId={allSenderLocalities.map(locality => locality.LocalityId)}
                 />
                 <Field
-                  aboveFieldText = 'Street'
+                  aboveFieldText = 'Street*'
                   fieldText = {senderStreet}
                   setFieldText = {setSenderStreet}
                   type = 'text'
@@ -226,7 +237,7 @@ function AWB() {
               <div className='details-div'>
                 
                 <Field
-                  aboveFieldText = 'Name'
+                  aboveFieldText = 'Name*'
                   fieldText = {recipientName}
                   setFieldText = {setRecipientName}
                   type = 'text'
@@ -240,14 +251,14 @@ function AWB() {
                   placeholder = 'Recipient'
                 />
                 <Field
-                  aboveFieldText = 'Email'
+                  aboveFieldText = 'Email*'
                   fieldText = {recipientEmail}
                   setFieldText = {setRecipientEmail}
                   type = 'email'
                   placeholder = 'Recipient'
                 />
                 <Field
-                  aboveFieldText = 'Phone'
+                  aboveFieldText = 'Phone*'
                   fieldText = {recipientPhone}
                   setFieldText = {setRecipientPhone}
                   type = 'text'
@@ -275,7 +286,7 @@ function AWB() {
                   menuId={allRecipientLocalities.map(locality => locality.LocalityId)}
                 />
                 <Field
-                  aboveFieldText = 'Street'
+                  aboveFieldText = 'Street*'
                   fieldText = {recipientStreet}
                   setFieldText = {setRecipientStreet}
                   type = 'text'
@@ -338,10 +349,10 @@ function AWB() {
 
               {/* Warning banner */}
               {serviceOptions.length === 0 && standardServiceType === false && heavyServiceType === false &&
-                <div className='options-unavailable-banner'>
+                <div className='warning-banner'>
                   <img src={Warning}/>
                   <div>
-                     The delivery options will be displayed after selecting a service type
+                     The delivery options & content will be displayed after selecting a service type
                   </div>
                 </div>
               }
@@ -363,8 +374,12 @@ function AWB() {
                   <div className='options-container'> 
                     {serviceOptions.map(option => (
                       <Option
+                        key={option.Code}
                         name = {option.Name}
                         description = {option.Description}
+                        code = {option.Code}
+                        optionsArray={selectedOptionsArray}
+                        setOptionsArray={setSelectedOptionsArray}
                       />
                     ))}
                   </div>
@@ -374,14 +389,62 @@ function AWB() {
                   <div className='options-container'> 
                     {serviceOptions.map(option => (
                       <Option
+                        key={option.Code}
                         name = {option.Name}
                         description = {option.Description}
+                        code = {option.Code}
+                        optionsArray={selectedOptionsArray}
+                        setOptionsArray={setSelectedOptionsArray}
                       />
                     ))}
                   </div>
                 }
 
               </div>
+
+              {(standardServiceType || heavyServiceType) && 
+                
+                <>
+                  <div className='heading'> Expedition Content </div>
+                  <br/><br/>
+                  <div className='expedition-content'>
+                    <QuantityField
+                      name='Package Nr.'
+                      counter={packageNo}
+                      setCounter={setPackageNo}
+                      serviceId = {selectedServiceId}
+                    />
+                    <QuantityField
+                      name='Weight (kg)'
+                      counter={weight}
+                      setCounter={setWeight}
+                      serviceId = {selectedServiceId}
+                    />
+
+                    <div>
+                      <div className='title'> Length (cm) </div>
+                      <input 
+                        className='dimension-input'
+                      />
+                    </div>
+
+                    <div>
+                      <div className='title'> Width (cm) </div>
+                      <input 
+                        className='dimension-input'
+                      />
+                    </div>
+
+                    <div>
+                      <div className='title'> Height (cm) </div>
+                      <input 
+                        className='dimension-input'
+                      />
+                    </div>
+
+                  </div>
+                </>
+              }
             </div>
           </div>
 
