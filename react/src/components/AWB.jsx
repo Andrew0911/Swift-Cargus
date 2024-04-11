@@ -8,6 +8,7 @@ import Toggle from './Toggle.jsx';
 import Option from './Option.jsx';
 import Warning from '../img/Warning.png'
 import QuantityField from './QuantityField.jsx';
+import DimensionInput from './DimensionInput.jsx';
 
 function AWB() {
 
@@ -47,6 +48,10 @@ function AWB() {
 
   const [packageNo, setPackageNo] = useState(1);
   const [weight, setWeight] = useState(1);
+  const [length, setLength] = useState(0);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+
   
   // Effect to fetch all counties
   useEffect(() => {
@@ -305,7 +310,7 @@ function AWB() {
 
           <br/> <br/> <br/> 
           <div>
-            <div className='person-container'>
+            <div className='person-container' style={{marginLeft: '20px', marginRight:'20px'}}>
 
               <div className='header-div'> Delivery Details </div>
 
@@ -421,34 +426,42 @@ function AWB() {
                       serviceId = {selectedServiceId}
                     />
 
-                    <div>
-                      <div className='title'> Length (cm) </div>
-                      <input 
-                        className='dimension-input'
-                      />
-                    </div>
+                    <DimensionInput
+                      fieldName={'Length'}
+                      setValue={setLength}
+                    />
 
-                    <div>
-                      <div className='title'> Width (cm) </div>
-                      <input 
-                        className='dimension-input'
-                      />
-                    </div>
+                    <DimensionInput
+                      fieldName={'Width'}
+                      setValue={setWidth}
+                    />
 
-                    <div>
-                      <div className='title'> Height (cm) </div>
-                      <input 
-                        className='dimension-input'
-                      />
-                    </div>
-
+                    <DimensionInput
+                      fieldName={'Height'}
+                      setValue={setHeight}
+                    />
+                    
                   </div>
+
+                  <div className='complete-dimensions-banner'>
+                    <img src={Warning}/>
+                    <div> Complete the dimensions of the largest package </div>
+                  </div>
+
+                  <br/>
                 </>
               }
             </div>
+            <br/>
           </div>
 
           <br/> <br/> <br/>
+        </div>
+
+        <br/><br/>
+        <div className='footer'>
+          <button className='outline-button'> Estimate Cost </button>
+          <button className='full-button'> Save AWB </button>
         </div>
       </form>
     </>
