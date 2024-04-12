@@ -6,6 +6,7 @@ import GuestLayout from "./components/GuestLayout";
 import DefaultLayout from "./components/DefaultLayout";
 import AWB from "./components/AWB";
 import Tracking from "./components/Tracking";
+import Profile from "./components/Profile";
 
 const router = createBrowserRouter([
     {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
             {
                 path: 'tracking',
                 element: <Tracking />
+            },
+            {
+                path: 'profile',
+                element: <Profile />
             }
         ]
     },

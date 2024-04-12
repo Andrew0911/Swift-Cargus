@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 function ItemsMenu() {
   const [selectedTab, setSelectedTab] = useState(() => {
-    return localStorage.getItem('selectedTab') || 'Dashboard';
+    return localStorage.getItem('selectedTab') || '';
   });
 
   useEffect(() => {

@@ -20,7 +20,6 @@ function AWB() {
   const [senderCountyId, setSenderCountyId] = useState(0);
   const [senderLocality, setSenderLocality] = useState('');
   const [senderLocalityId, setSenderLocalityId] = useState(0);
-
   const [senderStreet, setSenderStreet] = useState('');
   const [senderZipCode, setSenderZipCode] = useState('');
   
@@ -147,6 +146,40 @@ function AWB() {
 
   const submitAWB = async (ev) => {
     ev.preventDefault();
+    try {
+        const { data: awbNumber } = await axiosClient.post('/generate-awb', {
+          params : {
+            senderName: senderName,
+            senderContactPerson: senderContactPerson,
+            senderEmail: senderEmail,
+            senderPhone: senderPhone,
+            senderCountyId: senderCountyId,
+            senderLocalityId: senderLocalityId,
+            senderStreet: senderStreet,
+            senderZipCode: senderZipCode,
+            
+            recipientName: recipientName,
+            recipientContactPerson: recipientContactPerson,
+            recipientEmail: recipientEmail,
+            recipientPhone: recipientPhone,
+            recipientCountyId: recipientCountyId,
+            recipientLocalityId: recipientLocalityId,
+            recipientStreet: recipientStreet,
+            recipientZipCode: recipientZipCode,
+
+            serviceId: selectedServiceId,
+            options: selectedOptionsArray,
+            
+            packages: packageNo,
+            weight: weight,
+            length: length, 
+            width: width, 
+            height: height
+          }
+        });
+    } catch (error) {
+      console.error('Error generating the AWB', error);
+    }
   }
 
   return (
@@ -158,7 +191,7 @@ function AWB() {
 
       <div className='page-header'>AWB Generation</div>
 
-      <form onSubmit={submitAWB}>
+      <div>
         <div className='awb-container'>
           <div className = 'sender-and-recipient-section'>
             <div className='person-container'>
@@ -461,9 +494,10 @@ function AWB() {
         <br/><br/>
         <div className='footer'>
           <button className='outline-button'> Estimate Cost </button>
-          <button className='full-button'> Save AWB </button>
+          <button className='full-button' onClick={(ev) => submitAWB(ev)}> Save AWB </button>
         </div>
-      </form>
+      </div>
+
     </>
   )
 }

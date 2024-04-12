@@ -2,10 +2,11 @@ import SignOut from '../img/SignOut.png'
 import DefaultAvatar from '../img/DefaultAvatar.png'
 import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios';
-import router from '../router';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 function Header() {
   const { setCurrentUser, setUserToken } = useStateContext();
+  const navigate = useNavigate();
 
   const signOut = async (ev) => {
     ev.preventDefault();
@@ -14,6 +15,10 @@ function Header() {
     setUserToken(null);
     localStorage.removeItem('selectedTab');
   };
+
+  const goToProfile = () => {
+    navigate('/profile');
+  }
 
   return (
     <div className = "header">
@@ -24,6 +29,7 @@ function Header() {
             <img 
               src = {DefaultAvatar} 
               alt = ''
+              onClick={goToProfile}
               title="Profile"
             />
             <img
