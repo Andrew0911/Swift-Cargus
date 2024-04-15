@@ -5,9 +5,9 @@ use App\Models\Client;
 
 class ClientRepository 
 {
-    public static function getClientId() : int
+    public static function getClientId(int $userId) : int
     {
-        return Client::where('UserId', auth()->user()->id)->first()->ClientId;
+        return Client::where('UserId', $userId)->first()->ClientId;
     }
 
 }

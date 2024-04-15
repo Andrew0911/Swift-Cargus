@@ -31,6 +31,7 @@ class GenerateAwbRequest extends FormRequest
             'senderCountyId' => 'required|integer|exists:counties,CountyId',
             'senderLocalityId' => 'required|integer|exists:localities,LocalityId',
             'senderStreet' => 'required|string',
+            'senderNr' => 'required|string',
             'senderZipCode' => ['required', 'string', new ZipCodeValidationRule()],
 
             'recipientName' => 'required|string',
@@ -40,6 +41,7 @@ class GenerateAwbRequest extends FormRequest
             'recipientCountyId' => 'required|integer|exists:counties,CountyId',
             'recipientLocalityId' => 'required|integer|exists:localities,LocalityId',
             'recipientStreet' => 'required|string',
+            'recipientNr' => 'required|string',
             'recipientZipCode' => ['required', 'string', new ZipCodeValidationRule()],
 
             'serviceId' => 'required|integer',

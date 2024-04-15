@@ -9,6 +9,7 @@ import Option from './Option.jsx';
 import Warning from '../img/Warning.png'
 import QuantityField from './QuantityField.jsx';
 import DimensionInput from './DimensionInput.jsx';
+import SmallField from './SmallField.jsx';
 
 function AWB() {
 
@@ -21,6 +22,7 @@ function AWB() {
   const [senderLocality, setSenderLocality] = useState('');
   const [senderLocalityId, setSenderLocalityId] = useState(0);
   const [senderStreet, setSenderStreet] = useState('');
+  const [senderNr, setSenderNr] = useState('');
   const [senderZipCode, setSenderZipCode] = useState('');
   
   const [recipientName, setRecipientName] = useState('');
@@ -32,6 +34,7 @@ function AWB() {
   const [recipientLocality, setRecipientLocality] = useState('');
   const [recipientLocalityId, setRecipientLocalityId] = useState(0);
   const [recipientStreet, setRecipientStreet] = useState('');
+  const [recipientNr, setRecipientNr] = useState('');
   const [recipientZipCode, setRecipientZipCode] = useState('');
 
   const [allCounties, setAllCounties] = useState([]);
@@ -147,7 +150,7 @@ function AWB() {
   const submitAWB = async (ev) => {
     ev.preventDefault();
     try {
-        const { data: awbNumber } = await axiosClient.post('/generate-awb', {
+        const { data: awbNumber } = await axiosClient.post('/awb/generate-awb', {
           params : {
             senderName: senderName,
             senderContactPerson: senderContactPerson,
@@ -156,6 +159,7 @@ function AWB() {
             senderCountyId: senderCountyId,
             senderLocalityId: senderLocalityId,
             senderStreet: senderStreet,
+            senderNr: senderNr,
             senderZipCode: senderZipCode,
             
             recipientName: recipientName,
@@ -165,6 +169,7 @@ function AWB() {
             recipientCountyId: recipientCountyId,
             recipientLocalityId: recipientLocalityId,
             recipientStreet: recipientStreet,
+            recipientNr: recipientNr,
             recipientZipCode: recipientZipCode,
 
             serviceId: selectedServiceId,
@@ -257,13 +262,22 @@ function AWB() {
                   type = 'text'
                   placeholder = 'Sender'
                 />
-                <Field
-                  aboveFieldText = 'Zip Code'
-                  fieldText = {senderZipCode}
-                  setFieldText = {setSenderZipCode}
-                  type = 'text'
-                  placeholder = 'Sender'
-                />
+                <div className='zipcode_number'>
+                  <SmallField
+                    aboveFieldText = 'Nr*'
+                    fieldText = {senderNr}
+                    setFieldText = {setSenderNr}
+                    type = 'text'
+                    placeholder = 'Sender'
+                  />
+                  <SmallField
+                    aboveFieldText = 'Zip Code*'
+                    fieldText = {senderZipCode}
+                    setFieldText = {setSenderZipCode}
+                    type = 'text'
+                    placeholder = ''
+                  />
+                </div>
               </div>
             </div>
 
@@ -330,13 +344,22 @@ function AWB() {
                   type = 'text'
                   placeholder = 'Recipient'
                 />
-                <Field
-                  aboveFieldText = 'Zip Code'
-                  fieldText = {recipientZipCode}
-                  setFieldText = {setRecipientZipCode}
-                  type = 'text'
-                  placeholder = 'Recipient'
-                />
+                <div className='zipcode_number'>
+                  <SmallField
+                    aboveFieldText = 'Nr*'
+                    fieldText = {recipientNr}
+                    setFieldText = {setRecipientNr}
+                    type = 'text'
+                    placeholder = 'Recipient'
+                  />
+                  <SmallField
+                    aboveFieldText = 'Zip Code*'
+                    fieldText = {recipientZipCode}
+                    setFieldText = {setRecipientZipCode}
+                    type = 'text'
+                    placeholder = ''
+                  />
+                </div>
               </div>
             </div>
           </div>
