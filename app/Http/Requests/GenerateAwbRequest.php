@@ -24,34 +24,34 @@ class GenerateAwbRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'senderName' => 'required|string',
-            'senderContactPerson' => 'required|string',
-            'senderEmail' => 'required|email',
+            'senderName' => 'required|string|max:50',
+            'senderContactPerson' => 'nullable|string|max:50',
+            'senderEmail' => 'required|email|max:50',
             'senderPhone' => ['required', 'string', new PhoneValidationRule()],
             'senderCountyId' => 'required|integer|exists:counties,CountyId',
             'senderLocalityId' => 'required|integer|exists:localities,LocalityId',
-            'senderStreet' => 'required|string',
-            'senderNr' => 'required|string',
+            'senderStreet' => 'required|string|max:50',
+            'senderNr' => 'required|string|max:10',
             'senderZipCode' => ['required', 'string', new ZipCodeValidationRule()],
 
-            'recipientName' => 'required|string',
-            'recipientContactPerson' => 'required|string',
-            'recipientEmail' => 'required|email',
+            'recipientName' => 'required|string|max:50',
+            'recipientContactPerson' => 'nullable|string|max:50',
+            'recipientEmail' => 'required|email|max:50',
             'recipientPhone' => ['required', 'string', new PhoneValidationRule()],
             'recipientCountyId' => 'required|integer|exists:counties,CountyId',
             'recipientLocalityId' => 'required|integer|exists:localities,LocalityId',
-            'recipientStreet' => 'required|string',
-            'recipientNr' => 'required|string',
+            'recipientStreet' => 'required|string|max:50',
+            'recipientNr' => 'required|string|max:10',
             'recipientZipCode' => ['required', 'string', new ZipCodeValidationRule()],
 
-            'serviceId' => 'required|integer',
-            'options' => 'required|array',
+            'serviceId' => 'required|integer|min:1',
+            'options' => 'nullable|array',
 
-            'packages' => 'required|integer',
-            'weight' => 'required|integer',
-            'length' => 'required|integer',
-            'width' => 'required|integer',
-            'height' => 'required|integer',
+            'packages' => 'required|integer|min:1',
+            'weight' => 'required|integer|min:1',
+            'length' => 'required|integer|min:1',
+            'width' => 'required|integer|min:1',
+            'height' => 'required|integer|min:1',
         ];
     }
 }

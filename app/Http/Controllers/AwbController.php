@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GenerateAwbRequest;
 use App\Models\Address;
+use App\Models\Awb;
 use App\Models\Recipient;
 use App\Models\Sender;
 use App\Repositories\ClientRepository;
@@ -19,7 +20,16 @@ class AwbController extends Controller
         $userId = auth()->user()->id;
         $clientId = ClientRepository::getClientId($userId);
         $awbNumber = AwbService::getAwbNumber($userId, $clientId);
-        $awbDate = Carbon::now()->toDateTimeString();
+        $awbDate = Carbon::now()->addHours(3)->toDateTimeString();
+        $awbValue = AwbService::calculateAwbValue(
+            $request->serviceId,
+            $request->options,
+            $request->length,
+            $request->width,
+            $request->height,
+            $request->weight,
+            $request->packages
+        );
 
         $senderAddressId = Address::create([
             'CountyId' => $request->senderCountyId,
@@ -53,11 +63,24 @@ class AwbController extends Controller
             'Phone' =>  $request->recipientPhone
         ])->RecipientId;
 
-        // calculate value
+        Awb::create([
+            'Awb' => $awbNumber,
+            'ClientId' => $clientId,
+            'SenderId' => $senderId,
+            'RecipientId' => $recipientId,
+            'Value' => $awbValue,
+            'Date' => $awbDate,
+            'ServiceId' => $request->serviceId,
+            'Options' => implode("", $request->options),
+            'PackageNo' => $request->packages,
+            'Length' => $request->length,
+            'Width' => $request->width,
+            'Height' => $request->height,
+            'Weight' => $request->weight,
+            'StatusId' => 1
+        ]);
 
-        // insert AWB into DB
-
-        return response($awbNumber);
+        return response(['awbNumber' => $awbNumber]);
     }
     
 }

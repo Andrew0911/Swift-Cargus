@@ -151,7 +151,6 @@ function AWB() {
     ev.preventDefault();
     try {
         const { data: awbNumber } = await axiosClient.post('/awb/generate-awb', {
-          params : {
             senderName: senderName,
             senderContactPerson: senderContactPerson,
             senderEmail: senderEmail,
@@ -180,9 +179,9 @@ function AWB() {
             length: length, 
             width: width, 
             height: height
-          }
         });
-    } catch (error) {
+        window.location.href = `/awb-finalize?awbNumber=${awbNumber.awbNumber}`;    
+      } catch (error) {
       console.error('Error generating the AWB', error);
     }
   }

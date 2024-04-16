@@ -7,6 +7,7 @@ import DefaultLayout from "./components/DefaultLayout";
 import AWB from "./components/AWB";
 import Tracking from "./components/Tracking";
 import Profile from "./components/Profile";
+import FinalizeAWB from "./components/FinalizeAWB";
 
 const router = createBrowserRouter([
     {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
             {
                 path: 'profile',
                 element: <Profile />
+            },
+            {
+                path: 'awb-finalize',
+                element: <FinalizeAWB />
             }
         ]
     },

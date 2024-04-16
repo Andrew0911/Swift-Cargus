@@ -2,7 +2,7 @@ import SignOut from '../img/SignOut.png'
 import DefaultAvatar from '../img/DefaultAvatar.png'
 import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Header() {
   const { setCurrentUser, setUserToken } = useStateContext();
@@ -13,7 +13,6 @@ function Header() {
     await axiosClient.post('/logout');
     setCurrentUser({});
     setUserToken(null);
-    localStorage.removeItem('selectedTab');
   };
 
   const goToProfile = () => {

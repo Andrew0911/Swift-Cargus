@@ -14,7 +14,7 @@ class ServiceController extends Controller
         return response(Service::join('service_options', 'services.ServiceId', '=', 'service_options.ServiceId')
                                 ->join('options', 'options.OptionId', '=', 'service_options.OptionId')
                                 ->where("services.ServiceId", $request->serviceId)
-                                ->select(['options.Name', 'options.Description','options.Code'])
+                                ->select(['options.Name', 'options.Description', 'options.Code'])
                                 ->get() ?? []
         );
     }

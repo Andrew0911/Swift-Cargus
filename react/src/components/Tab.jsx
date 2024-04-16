@@ -1,16 +1,15 @@
 import { useNavigate } from "react-router-dom";
 
 function Tab(props) {
-    const { logo, title, selected, onClick } = props;
+    const { logo, title } = props;
     const navigate = useNavigate();
 
     const handleClick = () => {
       navigate(`/${title.toLowerCase()}`);
-      onClick(title);
     }
 
     return (
-    <div className = {`${selected ? 'selected' : ''}tab`} onClick = {handleClick}> 
+    <div className = 'tab' onClick = {handleClick}> 
       <img 
        src = {logo} 
        alt = ""

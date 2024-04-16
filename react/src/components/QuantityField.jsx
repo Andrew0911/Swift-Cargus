@@ -8,7 +8,21 @@ function QuantityField({ name, counter, setCounter, serviceId}) {
         <div className='quantity-field'>
             <div className='box'> {counter} </div>
             <div className='buttons-container'>
-                <button style={{ borderTopRightRadius: '5px' }} onClick={() => setCounter(counter + 1)}> + </button>
+                <button 
+                    style={{ borderTopRightRadius: '5px' }}
+                    onClick={() => {
+                        if(serviceId === 1)
+                        {
+                            if(name == 'Weight (kg)' && counter < 29){
+                                setCounter(counter + 1)
+                            } else if(name == 'Package Nr.'){
+                                setCounter(counter + 1)
+                            }
+                        } else if(serviceId === 2) {
+                            setCounter(counter + 1)
+                        }
+                    }}> + </button>
+                
                 <button 
                     style={{ borderBottomRightRadius: '5px' }} 
                     onClick={() => {

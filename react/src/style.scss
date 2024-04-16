@@ -155,27 +155,10 @@
                 width: inherit;
                 height: 60px;
                 color: #DEDEDE;
+                transition: 0.2s;
         
                 &:hover{
-                    color: white;
-                    background-color: #186f92;
-                    cursor: pointer;
-                }
-            }
-
-            .selectedtab{
-                padding-top: 10px;
-                padding-bottom: 10px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                width: inherit;
-                height: 60px;
-                color: var(--yellow-color);
-        
-                &:hover{
-                    color: white;
+                    color: var(--yellow-color);
                     background-color: #186f92;
                     cursor: pointer;
                 }
@@ -781,6 +764,62 @@
 .zipcode_number{
     display: flex;
     gap: 1vw;
+}
+
+.finalizePage-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: calc(100vw - 120px);
+    height: calc(100vh - 80px);
+
+    .title{
+        font-size: 24px;
+        color: #135a76;
+        font-weight: 650;
+
+        span{
+            color: var(--yellow-color);
+            font-size: 26px;
+        }
+    }
+
+    .buttons-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); 
+        grid-template-rows: repeat(2, auto); 
+        gap: 30px;
+
+        button{
+            padding-left: 2vw;
+            padding-right: 2vw;
+            display: flex;
+            align-items: center;
+            width: 18vw;
+            height: 10vh;
+            border-radius: 10px;
+            border: 1px solid #135a76;
+            background-color: hsl(200, 20%, 95%);
+            color: #135a76;
+            font-size: 16px;
+            font-family: "Quicksand", sans-serif;
+            font-weight: 500;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+
+            &:hover{
+                cursor: pointer;
+                border: 1px solid #4f96b2;
+                color: #4f96b2;
+                background-color: hsl(200, 20%, 93.5%);
+            }
+
+            &:active{
+                background-color: hsl(200, 20%, 91%);
+            }
+        }
+    }
 }
   
 body {
