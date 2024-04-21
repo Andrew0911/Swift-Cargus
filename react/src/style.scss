@@ -821,7 +821,27 @@
         }
     }
 }
-  
+
+.table-column
+{
+    color: var(--yellow-color);
+    font-size: 18px;
+}
+
+.table-row
+{
+    font-size: 16px;
+}
+
+.dashboard-container
+{
+    display: flex;
+}
+
+.MuiDataGrid-cell {
+    outline: none !important;
+}
+
 body {
     margin: 0;
     padding: 0;

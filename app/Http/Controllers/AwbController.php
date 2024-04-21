@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GenerateAwbRequest;
 use App\Models\Address;
 use App\Models\Awb;
+use App\Models\Option;
 use App\Models\Recipient;
 use App\Models\Sender;
+use App\Models\Status;
 use App\Repositories\ClientRepository;
 use App\Services\AwbService;
 use Carbon\Carbon;
@@ -81,6 +83,41 @@ class AwbController extends Controller
         ]);
 
         return response(['awbNumber' => $awbNumber]);
+    }
+
+    public function getClientAwbs()
+    {
+        $userId = auth()->user()->id;
+        $clientId = ClientRepository::getClientId($userId);
+        $awbs = Awb::where('ClientId', $clientId)
+                    ->orderByDesc('Date')
+                    ->get();
+
+        foreach($awbs as $awb)
+        {
+            $optionNamesArray = [];
+            $senderName = Sender::where('SenderId', $awb->SenderId)->value('Name');
+            $recipientName = Recipient::where('RecipientId', $awb->RecipientId)->value('Name');
+            $serviceName = $awb->ServiceId == 1 ? 'Standard' : 'Heavy';
+            foreach(str_split($awb->Options) as $option) {
+                $optionNamesArray[] = Option::where('Code', $option)->value('Name');
+            }
+            $optionNames = implode(', ', $optionNamesArray) != '' ? implode(', ', $optionNamesArray) : 'None';
+            $statusName = Status::where('StatusId', $awb->StatusId)->value('Name');
+
+            $formattedAwbs[] = [
+                'id' => $awb->Awb,
+                'senderName' => $senderName,
+                'recipientName' => $recipientName,
+                'date' => $awb->Date,
+                'service' => $serviceName,
+                'options' => $optionNames,
+                'value' => $awb->Value . ' RON',
+                'status' => $statusName
+            ];
+        }
+        
+        return response($formattedAwbs ?? []);
     }
     
 }
