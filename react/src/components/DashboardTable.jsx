@@ -98,7 +98,8 @@ export default function DashboardTable() {
     }, []);
     
     return (
-        <Box sx={{ marginLeft: '2vw', marginTop: '7.5vh', height: 652, width: '55%' }}>
+      <>
+        {rows.length > 0 && (<Box sx={{ marginLeft: '2vw', marginTop: '7.5vh', height: 652, width: '55%' }}>
             <DataGrid
                 sx={{ fontFamily: 'Quicksand, sans-serif' }}
                 rows={rows}
@@ -114,6 +115,8 @@ export default function DashboardTable() {
                 pageSizeOptions={[10, 20, 30]}
                 rowSelection={false}
             />
-        </Box>
+        </Box>)
+        }
+      </>
     );
 }

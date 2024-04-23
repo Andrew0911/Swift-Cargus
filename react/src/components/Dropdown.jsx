@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 
-export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFieldId, menuId}) => {
+export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFieldId, menuId, aboveFieldsize, width, height}) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(!open);
@@ -13,8 +13,11 @@ export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFie
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
         </Helmet>
         <div>
-            <p className='above-input-field'> {aboveFieldText} </p>
-            <button className="dropdown-button" onClick={handleOpen}>
+            <p 
+              className='above-input-field'
+              style={{ fontSize: aboveFieldsize }}
+            > {aboveFieldText} </p>
+            <button className="dropdown-button" style={{ width: width, height: height }} onClick={handleOpen}>
                 <div className="dropdown-text">
                     <div>
                         {fieldText || `Choose a ${aboveFieldText.replace(/\*/g, '').toLowerCase()}...`}
@@ -31,7 +34,7 @@ export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFie
                 </div>
             </button>
             {open ? (
-                <ul className="dropdown-menu">
+                <ul className="dropdown-menu" style={{ width: width }}>
                 {menu.map((menuItem, index) => (
                     <li key={index} className="menu-item">
                         {menuItem == 'No localities available' && aboveFieldText.replace(/\*/g, '').toLowerCase() == 'locality' ?

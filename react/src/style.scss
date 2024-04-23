@@ -456,6 +456,7 @@
     max-height: 130px;
     overflow-y: auto;
     background-color: #fff;
+    z-index: 1;
 }
   
 .dropdown-menu > li {
@@ -836,12 +837,28 @@
 .dashboard-container
 {
     display: flex;
+    margin-left: 2vw;
 }
 
 .MuiDataGrid-cell {
     outline: none !important;
 }
 
+.client-address-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90vw;
+    height: 75vh;
+}
 body {
     margin: 0;
     padding: 0;

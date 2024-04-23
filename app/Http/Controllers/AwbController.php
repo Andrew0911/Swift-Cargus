@@ -85,7 +85,7 @@ class AwbController extends Controller
         return response(['awbNumber' => $awbNumber]);
     }
 
-    public function getClientAwbs()
+    public function getClientAwbs() : Response
     {
         $userId = auth()->user()->id;
         $clientId = ClientRepository::getClientId($userId);
@@ -119,5 +119,21 @@ class AwbController extends Controller
         
         return response($formattedAwbs ?? []);
     }
-    
+
+    public function getEachStatusAwbCount() : Response
+    {
+        $userId = auth()->user()->id;
+        $clientId = ClientRepository::getClientId($userId);
+        $allStatuses = Status::select(['Name', 'StatusId'])->get();
+        
+        $countedStatuses = [];
+        foreach($allStatuses as $status)
+        {
+            $numberOfAwbsWithThatStatus = Awb::where('ClientId', $clientId)
+                                              ->where('StatusId', $status->StatusId)
+                                              ->count();
+            $countedStatuses[$status->Name] = $numberOfAwbsWithThatStatus;
+        }
+        return response($countedStatuses);
+    }
 }
