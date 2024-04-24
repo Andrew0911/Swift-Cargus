@@ -173,7 +173,7 @@ function Profile() {
       </div>
 
       <div className='client-form'>
-        <div className='client-contact-form'>
+        <div>
           <Field
             aboveFieldText = 'Name*'
             fieldText = {name}
@@ -220,7 +220,7 @@ function Profile() {
           />
         </div>
 
-        <div className='client-address-form'>
+        <div>
           <Dropdown
             aboveFieldText='County*'
             aboveFieldsize = '18px'
