@@ -5,11 +5,14 @@ import Field from './Field';
 import { useEffect } from 'react';
 import axiosClient from '../axios';
 import { Dropdown } from './Dropdown';
+import SmallField from './SmallField';
 
 function Profile() {
 
   const [allCounties, setAllCounties] = useState([]);
   const [allLocalities, setAllLocalities] = useState([]);
+  const [clientInfo, setClientInfo] = useState({});
+  const [clientData, setClientData] = useState([]);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -38,8 +41,11 @@ function Profile() {
   }, []);
 
   useEffect(() => {
-    setLocality('');
-    setLocalityId(0);
+    if(clientData['County'] != county)
+    {
+      setLocality('');
+      setLocalityId(0);
+    }
     const fetchLocalities = async () => {
       if (!county) return; 
 
@@ -60,6 +66,68 @@ function Profile() {
     fetchLocalities();
   }, [county]); 
 
+  useEffect(() => {
+    const fetchClientInformation = async () => {
+      try {
+        const { data: clientInfo } = await axiosClient.get('/user-information');
+        setClientInfo(clientInfo);
+      } catch (error) {
+        console.error('Error fetching client information:', error);
+      }
+    };
+
+    fetchClientInformation();
+  }, []);
+
+  useEffect(() => {
+    const fetchClientData = async () => {
+      try {
+        const { data: clientData } = await axiosClient.get('/client-data');
+        setClientData(clientData);
+        if(clientData)
+        {
+          setName(clientData['Name']);
+          setEmail(clientData['Email']);
+          setPhone(clientData['Phone']);
+          setLocality(clientData['Locality']);
+          setLocalityId(clientData['LocalityId'])
+          setCounty(clientData['County']);
+          setCountyId(clientData['CountyId']);
+          setStreet(clientData['Street']);
+          setNr(clientData['Nr']);
+          setZipCode(clientData['ZipCode']);
+          if(clientData['ContactPerson']){
+            setContactPerson(clientData['ContactPerson']);
+          }
+        } 
+      } catch (error) {
+        console.error('Error fetching client data:', error);
+      }
+    };
+    fetchClientData();
+  }, []);
+
+  const handleInformationSave = async (ev) => {
+    ev.preventDefault();
+
+    try {
+      const { data: data } = await axiosClient.post('/save-or-update-client-information', {
+          name: name,
+          email: email,
+          phone: phone,
+          contactPerson: contactPerson,
+          countyId: countyId,
+          localityId: localityId,
+          street: street, 
+          nr: nr,
+          zipCode: zipCode
+      });
+      window.location.href = '/profile';
+    } catch (error) {
+      console.error('Error saving or updating the client data:', error);
+    }
+  }
+
   return (
     <>
       <Helmet>
@@ -68,9 +136,44 @@ function Profile() {
       </Helmet>
 
       <div className='page-header'>Profile</div>
-      <br/><br/><br/><br/><br/><br/>
       
-      <div className='client-address-form'>
+      <br/><br/>
+
+      {clientInfo['Name'] ?
+        (<div className='client-information'>
+  
+          <div style = {{display: 'flex', alignItems: 'center', gap: '5px'}}> 
+            <p style = {{ color: ' #135a76', fontFamily: 'Quicksand', fontWeight: 'bold'}}> Name: </p> 
+            <span> {clientInfo['Name']} </span>
+          </div>
+
+          <div style = {{display: 'flex', alignItems: 'center', gap: '5px'}}> 
+            <p style = {{ color: ' #135a76', fontFamily: 'Quicksand', fontWeight: 'bold'}}> Email: </p> 
+            <span> {clientInfo['Email']} </span>
+          </div>
+
+          <div style = {{display: 'flex', alignItems: 'center', gap: '5px'}}> 
+            <p style = {{ color: ' #135a76', fontFamily: 'Quicksand', fontWeight: 'bold'}}> Member Since: </p> 
+            <span> {clientInfo['Date']} </span>
+          </div>
+        
+        </div>) : (
+          <div className='client-information skeleton'>
+
+          </div>
+        )
+      }
+
+      <br/> <br/><br/>
+
+       
+      <div className='headers'> 
+        <div className='client-heading'> Contact  </div>
+        <div className='client-heading'> Address Details </div>
+      </div>
+
+      <div className='client-form'>
+        <div className='client-contact-form'>
           <Field
             aboveFieldText = 'Name*'
             fieldText = {name}
@@ -80,6 +183,7 @@ function Profile() {
             width = '23vw'
             height = '4vh'
             aboveFieldsize = '18px'
+            fontSize = '18px'
           />
           <Field
             aboveFieldText = 'Contact Person'
@@ -90,6 +194,7 @@ function Profile() {
             width = '23vw'
             height = '4vh'
             aboveFieldsize = '18px'
+            fontSize = '18px'
           /> 
           <Field
             aboveFieldText = 'Email*'
@@ -100,6 +205,7 @@ function Profile() {
             width = '23vw'
             height = '4vh'
             aboveFieldsize = '18px'
+            fontSize = '18px'
           />
           <Field
             aboveFieldText = 'Phone*'
@@ -110,28 +216,34 @@ function Profile() {
             width = '23vw'
             height = '4vh'
             aboveFieldsize = '18px'
+            fontSize = '18px'
           />
+        </div>
+
+        <div className='client-address-form'>
           <Dropdown
             aboveFieldText='County*'
             aboveFieldsize = '18px'
+            fontSize = '18px'
             fieldText = {county}
             setFieldText = {setCounty}
             menu={allCounties.map(county => county.Name)}
             setFieldId = {setCountyId}
             menuId={allCounties.map(county => county.CountyId)}
             width='24vw'
-            height='6vh'
+            height='5.8vh'
           />
           <Dropdown
             aboveFieldText='Locality*'
             aboveFieldsize = '18px'
+            fontSize = '18px'
             fieldText = {locality}
             setFieldText = {setLocality}
             menu={ county ? (allLocalities.map(locality => locality.Name)) : ['No localities available']}
             setFieldId = {setLocalityId}
             menuId={allLocalities.map(locality => locality.LocalityId)}
             width='24vw'
-            height='6vh'
+            height='5.8vh'
           />
           <Field
             aboveFieldText = 'Street*'
@@ -139,33 +251,42 @@ function Profile() {
             setFieldText = {setStreet}
             type = 'text'
             placeholder = ''
-            width = '23vw'
+            width = '23.5vw'
             height = '4vh'
             aboveFieldsize = '18px'
+            fontSize = '18px'
           />
-          <Field
-            aboveFieldText = 'Nr*'
-            fieldText = {nr}
-            setFieldText = {setNr}
-            type = 'text'
-            placeholder = ''
-            width = '23vw'
-            height = '4vh'
-            aboveFieldsize = '18px'
-          />
-          <Field
-            aboveFieldText = 'ZipCode*'
-            fieldText = {zipCode}
-            setFieldText = {setZipCode}
-            type = 'text'
-            placeholder = ''
-            width = '23vw'
-            height = '4vh'
-            aboveFieldsize = '18px'
-          />
-      </div>
-      <br/><br/><br/><br/><br/><br/>
 
+          <div style={{display: 'flex', gap: '3vw'}}>
+            <SmallField
+              aboveFieldText = 'Nr*'
+              fieldText = {nr}
+              setFieldText = {setNr}
+              type = 'text'
+              placeholder = ''
+              width = '10vw'
+              height = '4vh'
+              aboveFieldsize = '18px'
+              fontSize = '18px'
+            />
+            <SmallField
+              aboveFieldText = 'ZipCode*'
+              fieldText = {zipCode}
+              setFieldText = {setZipCode}
+              type = 'text'
+              placeholder = ''
+              width = '10vw'
+              height = '4vh'
+              aboveFieldsize = '18px'
+              fontSize = '18px'
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className='button-container'>
+        <button onClick={handleInformationSave} style={{fontSize: '18px'}}> Save Information </button>
+      </div>
     </>
   )
 }

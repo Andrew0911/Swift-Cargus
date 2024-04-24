@@ -13,6 +13,8 @@ class Client extends Model
         'UserId',
         'AddressId',
         'Name',
-        'Phone'
+        'Phone',
+        'Email',
+        'Contact_Person'
     ];
 }

@@ -23,8 +23,7 @@ function Option({ name, description, code, optionsArray, setOptionsArray }) {
                 <Checkbox
                     checked={selectedOption}
                     onChange={handleCheckboxChange}
-                    color="default"
-                    sx={{ '& .MuiSvgIcon-root': { fontSize: 28 } }}
+                    sx={{ '& .MuiSvgIcon-root': { fontSize: 28, color: "#135a76" } }}
                 />
             </div>
         </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 
-export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFieldId, menuId, aboveFieldsize, width, height}) => {
+export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFieldId, menuId, aboveFieldsize, width, height, fontSize}) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(!open);
@@ -19,7 +19,7 @@ export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFie
             > {aboveFieldText} </p>
             <button className="dropdown-button" style={{ width: width, height: height }} onClick={handleOpen}>
                 <div className="dropdown-text">
-                    <div>
+                    <div style={{ fontSize: fontSize }}>
                         {fieldText || `Choose a ${aboveFieldText.replace(/\*/g, '').toLowerCase()}...`}
                     </div>
                     <div
@@ -36,7 +36,7 @@ export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFie
             {open ? (
                 <ul className="dropdown-menu" style={{ width: width }}>
                 {menu.map((menuItem, index) => (
-                    <li key={index} className="menu-item">
+                    <li key={index} style={{ fontSize: fontSize }}>
                         {menuItem == 'No localities available' && aboveFieldText.replace(/\*/g, '').toLowerCase() == 'locality' ?
                             
                             (<button disabled> {menuItem} </button>) : 

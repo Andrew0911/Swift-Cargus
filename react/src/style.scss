@@ -638,10 +638,10 @@
 
 @keyframes skeleton-loading {
     0%{
-        background-color: hsl(200, 20%, 70%);
+        background-color: hsl(211, 33%, 85%);
     }
     100%{
-        background-color: hsl(200, 20%, 95%);
+        background-color: hsl(211, 33%, 98%);
     }
 }
 
@@ -764,7 +764,7 @@
 
 .zipcode_number{
     display: flex;
-    gap: 1vw;
+    gap: 1.4vw;
 }
 
 .finalizePage-container{
@@ -801,7 +801,7 @@
             height: 10vh;
             border-radius: 10px;
             border: 1px solid #135a76;
-            background-color: hsl(200, 20%, 95%);
+            background-color: hsl(211, 33%, 96%);
             color: #135a76;
             font-size: 16px;
             font-family: "Quicksand", sans-serif;
@@ -844,12 +844,52 @@
     outline: none !important;
 }
 
-.client-address-form {
+.client-form {
     display: flex;
-    flex-direction: column;
+    padding-left: 10vw;
+    padding-right: 10vw;
+    gap: 5vw;
+    align-items: center;
+    justify-content: center;
+    height: 45vh;
+    width: 72.5vw;
+
+    .client-address-form {
+        
+    }
+
+    .client-contact-form {
+    }
+}
+
+.button-container{
+    display: flex;
     justify-content: center;
     align-items: center;
-    height: 80vh;
+    width: 92.5vw;
+    height: 15vh;
+
+    button{
+        width: 18vw;
+        height: 7vh;
+        color: white;
+        background-color: var(--yellow-color);
+        border: none;
+        border-radius: 8px;
+        font-family: "Quicksand", sans-serif;
+        font-size: 16px;
+        transition: 0.3s;
+
+        &:hover{
+            cursor: pointer;
+            background-color: #e9a600;
+        }
+
+        &:active{
+            transition: 0s;
+            background-color: #d09400;
+        }
+    }
 }
 
 .center{
@@ -859,6 +899,52 @@
     width: 90vw;
     height: 75vh;
 }
+
+.headers{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 92.5vw;
+    gap: 23vw;
+
+    .client-heading{
+        color:#186f92;
+        font-family: "Quicksand", sans-serif;
+        font-size: 20px;
+        font-weight: bold;
+    }
+}
+
+.client-information{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 87.5vw;
+    height: 7vh;
+    margin-left: 2vw;
+    margin-right: 2vw;
+    background-color: hsl(211, 33%, 93%);
+    border: 1px solid #135a76;
+    border-radius: 8px;
+    padding-left: 1vw;
+    padding-right: 1vw;
+}
+
+.autocomplete-information {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: inherit;
+    margin-left: 1.5vw;
+    margin-right: 1.5vw;
+    background-color: hsl(211, 33%, 95%);
+    border: 1px solid #135a76;
+    border-radius: 5px;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    height: 5.5vh;
+}
+
 body {
     margin: 0;
     padding: 0;

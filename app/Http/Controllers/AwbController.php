@@ -33,6 +33,17 @@ class AwbController extends Controller
             $request->packages
         );
 
+        $senderAddress = AddressController::findAddressByData(
+            $request->senderCountyId,
+            $request->senderLocalityId,
+            $request->senderStreet,
+            $request->senderNr,
+            $request->senderZipCode
+        );
+
+        if($senderAddress){
+            $senderAddressId = $senderAddress->AddressId;
+        } else {
         $senderAddressId = Address::create([
             'CountyId' => $request->senderCountyId,
             'LocalityId' => $request->senderLocalityId,
@@ -40,6 +51,7 @@ class AwbController extends Controller
             'Nr' => $request->senderNr,
             'ZipCode' => $request->senderZipCode,
         ])->AddressId;
+        }
 
         $senderId = Sender::create([
             'AddressId' => $senderAddressId,
@@ -49,6 +61,17 @@ class AwbController extends Controller
             'Phone' =>  $request->senderPhone
         ])->SenderId;
 
+        $recipientAddress = AddressController::findAddressByData(
+            $request->recipientCountyId,
+            $request->recipientLocalityId,
+            $request->recipientStreet,
+            $request->recipientNr,
+            $request->recipientZipCode
+        );
+
+        if($recipientAddress){
+            $recipientAddressId = $recipientAddress->AddressId;
+        } else {
         $recipientAddressId = Address::create([
             'CountyId' => $request->recipientCountyId,
             'LocalityId' => $request->recipientLocalityId,
@@ -56,6 +79,7 @@ class AwbController extends Controller
             'Nr' => $request->recipientNr,
             'ZipCode' => $request->recipientZipCode,
         ])->AddressId;
+        }
 
         $recipientId = Recipient::create([
             'AddressId' => $recipientAddressId,

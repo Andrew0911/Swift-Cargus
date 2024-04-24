@@ -25,7 +25,8 @@ class AuthController extends Controller
 
         $client = Client::create([
             'UserId' => $user->id,
-            'Name' => $data['name']
+            'Name' => $data['name'],
+            'Email' => $data['email']
         ]);
         $token = $user->createToken('main')->plainTextToken;
         

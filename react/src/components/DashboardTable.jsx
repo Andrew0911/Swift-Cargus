@@ -1,8 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-import { useState, useEffect } from 'react';
-import axiosClient from '../axios';
 
 const columns = [
     { 
@@ -81,42 +79,20 @@ const getRowClassName = () => {
     return 'table-row';
 };
 
-export default function DashboardTable() {
+export default function DashboardTable({ rows }) {
 
-    const [rows, setRows] = useState([]);
-
-    useEffect(() => {
-        const fetchAllRows = async () => {
-            try {
-                const { data: fetchedRows } = await axiosClient.get('/awb/get-awbs');
-                setRows(fetchedRows);
-            } catch (error) {
-                console.error('Error fetching all awbs:', error);
-            }
-        };
-        fetchAllRows();
-    }, []);
-    
     return (
-      <>
-        {rows.length > 0 && (<Box sx={{ marginLeft: '2vw', marginTop: '7.5vh', height: 652, width: '55%' }}>
-            <DataGrid
-                sx={{ fontFamily: 'Quicksand, sans-serif' }}
-                rows={rows}
-                columns={columns}
-                initialState={{
-                    pagination: {
-                        paginationModel: {
-                            pageSize: 10,
-                        },
-                    },
-                }}
-                getRowClassName={getRowClassName}
-                pageSizeOptions={[10, 20, 30]}
-                rowSelection={false}
-            />
-        </Box>)
-        }
-      </>
-    );
+      <Box sx={{ marginLeft: '2vw', marginTop: '7.5vh', height: 652, width: '55%' }}>
+        <DataGrid
+          sx={{ fontFamily: 'Quicksand, sans-serif' }}
+          rows={rows}
+          columns={columns}
+          initialState={{ pagination: { paginationModel: { pageSize: 10 }}}}
+          getRowClassName={getRowClassName}
+          pageSizeOptions={[10, 20, 30]}
+          rowSelection={false}
+        />
+      </Box>
+    )
+      
 }

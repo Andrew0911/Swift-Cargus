@@ -10,6 +10,7 @@ import Warning from '../img/Warning.png'
 import QuantityField from './QuantityField.jsx';
 import DimensionInput from './DimensionInput.jsx';
 import SmallField from './SmallField.jsx';
+import { Checkbox } from '@mui/material';
 
 function AWB() {
 
@@ -54,6 +55,8 @@ function AWB() {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
 
+  const [autoCompleteSenderInformation, setAutoCompleteSenderInformation] = useState(false);
+  const [senderData, setSenderData] = useState([]);
   
   // Effect to fetch all counties
   useEffect(() => {
@@ -71,8 +74,11 @@ function AWB() {
 
   // Get sender localities when senderCounty changes
   useEffect(() => {
-    setSenderLocality('');
-    setSenderLocalityId(0);
+    if(senderCounty != senderData['County'])
+    {
+      setSenderLocality('');
+      setSenderLocalityId(0);
+    }
     const fetchSenderLocalities = async () => {
       if (!senderCounty) return; 
 
@@ -186,6 +192,53 @@ function AWB() {
     }
   }
 
+  useEffect(() => {
+    const fetchSenderInformation = async () => {
+      try {
+        if(autoCompleteSenderInformation === true)
+        {
+          const { data: senderData } = await axiosClient.get('/client-data');
+          setSenderData(senderData);
+          if(senderData)
+          {
+            setSenderName(senderData['Name']);
+            setSenderEmail(senderData['Email']);
+            setSenderPhone(senderData['Phone']);
+            setSenderLocality(senderData['Locality']);
+            setSenderLocalityId(senderData['LocalityId'])
+            setSenderCounty(senderData['County']);
+            setSenderCountyId(senderData['CountyId']);
+            setSenderStreet(senderData['Street']);
+            setSenderNr(senderData['Nr']);
+            setSenderZipCode(senderData['ZipCode']);
+            if(senderData['ContactPerson']){
+              setSenderContactPerson(senderData['ContactPerson']);
+            }
+          } 
+        } else {
+          setSenderName('');
+            setSenderEmail('');
+            setSenderPhone('');
+            setSenderLocality('');
+            setSenderLocalityId(0)
+            setSenderCounty('');
+            setSenderCountyId(0);
+            setSenderStreet('');
+            setSenderNr('');
+            setSenderZipCode('');
+            setSenderContactPerson('');
+        }
+      } catch (error) {
+        console.error('Error fetching client data:', error);
+      }
+    };
+    fetchSenderInformation();
+  }, [autoCompleteSenderInformation]);
+
+  const handleAutocompleteCheck = (event) => {
+    setAutoCompleteSenderInformation(event.target.checked);
+  };
+
   return (
     <>
       <Helmet>
@@ -236,7 +289,7 @@ function AWB() {
               </div>
 
               <div className='heading'> Address Details </div>
-              <div className='details-div'>
+              <div className='details-div' style={{ marginBottom: '0'}}>
 
                 <Dropdown
                   aboveFieldText='County*'
@@ -278,6 +331,20 @@ function AWB() {
                   />
                 </div>
               </div>
+
+              <br/>
+
+              <div className='autocomplete-information'>
+                <p style={{color: "#135a76", fontFamily: "Quicksand", fontWeight: "600"}}> Autocomplete using profile preferences </p>
+                <Checkbox
+                  checked={autoCompleteSenderInformation}
+                  onChange={handleAutocompleteCheck}
+                  sx={{ '& .MuiSvgIcon-root': { fontSize: 28, color: "#135a76" } }}
+                /> 
+              </div>
+
+              <br/>
+
             </div>
 
             <div className='person-container'>
