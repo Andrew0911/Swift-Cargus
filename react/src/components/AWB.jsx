@@ -57,6 +57,9 @@ function AWB() {
 
   const [autoCompleteSenderInformation, setAutoCompleteSenderInformation] = useState(false);
   const [senderData, setSenderData] = useState([]);
+
+  const [showCostPanel, setShowCostPanel] = useState(false)
+  const [cost, setCost] = useState({});
   
   // Effect to fetch all counties
   useEffect(() => {
@@ -238,6 +241,38 @@ function AWB() {
   const handleAutocompleteCheck = (event) => {
     setAutoCompleteSenderInformation(event.target.checked);
   };
+
+  const handleShowCostPanel = async (ev) => {
+    ev.preventDefault();
+    setShowCostPanel(!showCostPanel); 
+  }
+
+  useEffect(() => {
+    if(
+      selectedServiceId == 0 || 
+      length == 0 || 
+      width == 0 ||
+      height == 0
+    ) return;
+    const fetchCost = async () => {
+      try {
+        setShowCostPanel(false);
+        const { data: cost } = await axiosClient.get('/awb/estimate-cost', { params : {
+          serviceId: selectedServiceId,
+          options: selectedOptionsArray,
+          packages: packageNo,
+          weight: weight,
+          length: length, 
+          width: width, 
+          height: height
+        }});
+        setCost(cost);
+      } catch (error) {
+        console.error('Error fetching cost estimation:', error);
+      }
+    };
+    fetchCost();
+  }, [selectedServiceId, selectedOptionsArray, length, width, height, weight, packageNo]);
 
   return (
     <>
@@ -581,8 +616,30 @@ function AWB() {
         </div>
 
         <br/><br/>
+        {showCostPanel &&
+          <div className='estimate-cost-panel'> 
+           <div className='cost-and-x'> Cost <button onClick={() => setShowCostPanel(false)}> x </button> </div>
+           <div className='cost'> <div>{'Service:'}</div> <div>{ cost['ServiceCost'] + ' RON'} </div></div>
+           <div className='cost'> <div>{'Volume:'}</div> <div>{cost['VolumeCost'] + ' RON'} </div></div>
+           <div className='cost'> <div>{'Weight:'}</div> <div>{cost['WeightCost'] + ' RON'} </div></div>
+           <div className='cost'> <div>{'Package Number:'}</div> <div>{cost['AdditionalPackagesCost'] + ' RON'} </div></div>
+           <div className='cost'> <div>{'Options:'}</div> <div>{cost['OptionsCost'] + ' RON'} </div></div>
+           
+           <div className='cost' style={{borderTop: '1px solid #135a76', paddingTop: '5px'}}> <div>{'Cost without VAT::'}</div> <div>{cost['CostNoVat'] + ' RON'} </div></div>
+           <div className='cost'> <div>{'VAT:'}</div> <div>{cost['Vat'] + ' RON'} </div></div>
+           <div className='cost' style={{fontWeight: '550', color: 'var(--yellow-color)'}}> <div>{'Total cost:'}</div> <div>{cost['TotalCost'] + ' RON'} </div></div>
+
+          </div>
+        }
+
         <div className='footer'>
-          <button className='outline-button'> Estimate Cost </button>
+          {
+            selectedServiceId > 0 &&
+            length > 0 &&  
+            width > 0 &&  
+            height > 0 &&
+            <button className='estimate-cost-button' onClick={(ev) => handleShowCostPanel(ev)}> Estimate Cost </button>
+          }
           <button className='full-button' onClick={(ev) => submitAWB(ev)}> Save AWB </button>
         </div>
       </div>

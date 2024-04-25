@@ -7,5 +7,6 @@ return [
     'volume-rate' => env('VOLUME_RATE'),
     'standard-weight-rate' => env('STANDARD_WEIGHT_RATE'),
     'heavy-weight-rate' => env('HEAVY_WEIGHT_RATE'),
-    'additional-package-cost' => env('ADDITIONAL_PACKAGE_COST')
+    'additional-package-cost' => env('ADDITIONAL_PACKAGE_COST'),
+    'vat' => env('VAT')
 ];

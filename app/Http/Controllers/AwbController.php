@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EstimateCostRequest;
 use App\Http\Requests\GenerateAwbRequest;
 use App\Models\Address;
 use App\Models\Awb;
@@ -12,6 +13,7 @@ use App\Models\Sender;
 use App\Models\Status;
 use App\Repositories\ClientRepository;
 use App\Services\AwbService;
+use App\Services\OptionsService;
 use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -159,5 +161,34 @@ class AwbController extends Controller
             $countedStatuses[$status->Name] = $numberOfAwbsWithThatStatus;
         }
         return response($countedStatuses);
+    }
+
+    public function estimateAwbCost(EstimateCostRequest $request) : Response
+    {
+        $baseRate = $request->serviceId == 1 ? floatval(config('costs.standard-base-rate')) : floatval(config('costs.heavy-base-rate'));
+        $weightRate = $request->serviceId == 1 ? floatval(config('costs.standard-weight-rate')) : floatval(config('costs.heavy-weight-rate')); 
+        $volumeRate = floatval(config('costs.volume-rate'));
+
+        $volume = $request->length * $request->width * $request->height;
+        $volumeCost = (float) number_format($volume * $volumeRate, 4, '.', '');
+        $weightCost = (float) number_format($request->weight * $weightRate, 4, '.', '');
+
+        $additionalPackageCost = (float) number_format(($request->packages - 1) * floatval(config('costs.additional-package-cost')), 4, '.', '');
+        $optionsCost = (float) number_format(OptionsService::getTotalOptionsCost($request->options ?? []), 4, '.', '');
+        $vat = intval(config('costs.vat'));
+
+        $costNoVat = (float) number_format($baseRate + $volumeCost + $weightCost + $additionalPackageCost + $optionsCost, 4, '.', '');
+        $vatCost = (float) number_format($vat * $costNoVat / 100, 4, '.', '');
+
+        return response([
+            'ServiceCost' => $baseRate,
+            'VolumeCost' => $volumeCost,
+            'WeightCost' => $weightCost,
+            'AdditionalPackagesCost' => $additionalPackageCost,
+            'OptionsCost' => $optionsCost,
+            'CostNoVat' => $costNoVat,
+            'Vat' => $vatCost,
+            'TotalCost' => (float) number_format($costNoVat + $vatCost, 4, '.', '')
+        ]);
     }
 }

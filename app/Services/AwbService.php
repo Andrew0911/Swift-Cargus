@@ -22,17 +22,19 @@ class AwbService
 
     public static function calculateAwbValue(int $serviceId, array $options, int $length, int $width, int $height, float $weight, int $packageNo) : float
     {
-        $baseRate = $serviceId === 1 ? floatval(config('costs.standard-base-rate')) : floatval(config('costs.heavy-base-rate'));
-        $weightRate = $serviceId === 1 ? floatval(config('costs.standard-weight-rate')) : floatval(config('costs.heavy-weight-rate')); 
+        $baseRate = $serviceId == 1 ? floatval(config('costs.standard-base-rate')) : floatval(config('costs.heavy-base-rate'));
+        $weightRate = $serviceId == 1 ? floatval(config('costs.standard-weight-rate')) : floatval(config('costs.heavy-weight-rate')); 
         $volumeRate = floatval(config('costs.volume-rate'));
 
         $volume = $length * $width * $height;
-        $volumeCost = $volume * $volumeRate;
-        $weightCost = $weight * $weightRate;
+        $volumeCost = (float) number_format($volume * $volumeRate, 4, '.', '');
+        $weightCost = (float) number_format($weight * $weightRate, 4, '.', '');
 
-        $additionalPackageCost = ($packageNo - 1) * floatval(config('costs.additional-package-cost'));
-        $optionsCost = OptionsService::getTotalOptionsCost($options);
+        $additionalPackageCost = (float) number_format(($packageNo - 1) * floatval(config('costs.additional-package-cost')), 4, '.', '');
+        $optionsCost = (float) number_format(OptionsService::getTotalOptionsCost($options), 4, '.', '');
+        $vat = intval(config('costs.vat'));
     
-        return $baseRate + $volumeCost + $weightCost + $additionalPackageCost + $optionsCost;
+        $value = (100 + $vat) * ($baseRate + $volumeCost + $weightCost + $additionalPackageCost + $optionsCost) / 100;
+        return (float) number_format($value, 4, '.', '');
     }
 }
