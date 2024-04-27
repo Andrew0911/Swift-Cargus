@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EstimateCostRequest;
 use App\Http\Requests\GenerateAwbRequest;
+use App\Http\Requests\PrintAwbRequest;
 use App\Models\Address;
 use App\Models\Awb;
 use App\Models\Option;
@@ -191,4 +192,64 @@ class AwbController extends Controller
             'TotalCost' => (float) number_format($costNoVat + $vatCost, 4, '.', '')
         ]);
     }
+
+    public function getPrintingDetails(PrintAwbRequest $request) : Response
+    {
+        $userId = auth()->user()->id;
+        $clientId = ClientRepository::getClientId($userId);
+        $awb = Awb::where('ClientId', $clientId)->where('Awb', $request->awb)->first();
+
+        if(!$awb){
+            return response(['message' => 'This AWB is not associated with your account']);
+        }
+
+        $optionNamesArray = [];
+        
+        $sender = Sender::where('SenderId', $awb->SenderId)->first();
+        $senderAddress = AddressController::findAddressById($sender->AddressId);
+        $senderConty = AddressController::getCountyById($senderAddress->CountyId)->Name;
+        $senderLocality = AddressController::getLocalityById($senderAddress->LocalityId)->Name;
+
+        $recipient = Recipient::where('RecipientId', $awb->RecipientId)->first();
+        $recipientAddress = AddressController::findAddressById($recipient->AddressId);
+        $recipientConty = AddressController::getCountyById($recipientAddress->CountyId)->Name;
+        $recipientLocality = AddressController::getLocalityById($recipientAddress->LocalityId)->Name;
+        
+        $serviceName = $awb->ServiceId == 1 ? 'Standard' : 'Heavy';
+        foreach(str_split($awb->Options) as $option) {
+            $optionNamesArray[] = Option::where('Code', $option)->value('Name');
+        }
+        $optionNames = implode(', ', $optionNamesArray) != '' ? implode(', ', $optionNamesArray) : 'None';
+
+        return response([
+            'awbNumber' => $awb->Awb,
+
+            'senderName' => $sender->Name,
+            'senderPhone' => $sender->Phone,
+            'senderCounty' => $senderConty,
+            'senderLocality' => $senderLocality,
+            'senderStreet' => $senderAddress->Street,
+            'senderNr' => $senderAddress->Nr,
+            'senderZipCode' => $senderAddress->ZipCode,
+
+            'recipientName' => $recipient->Name,
+            'recipientPhone' => $recipient->Phone,
+            'recipientCounty' => $recipientConty,
+            'recipientLocality' => $recipientLocality,
+            'recipientStreet' => $recipientAddress->Street,
+            'recipientNr' => $recipientAddress->Nr,
+            'recipientZipCode' => $recipientAddress->ZipCode,
+
+            'date' => $awb->Date,
+            'service' => $serviceName,
+            'options' => $optionNames,
+            'value' => $awb->Value . ' RON',
+            'weight' => $awb->Weight,
+            'length' => $awb->Length, 
+            'width' => $awb->Width,
+            'height' => $awb->Height,
+            'packages' => $awb->PackageNo
+        ]);
+    }
+
 }

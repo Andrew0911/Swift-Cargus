@@ -722,6 +722,29 @@
     }
 }
 
+.dynamic-button{
+    width: 8vw;
+    height: 6vh;
+    color: white;
+    background-color: var(--yellow-color);
+    border: none;
+    border-radius: 5px;
+    font-family: "Quicksand", sans-serif;
+    font-size: 16px;
+    transition: 0.3s;
+    animation: bounce-more 1s;
+
+    &:hover{
+        cursor: pointer;
+        background-color: #e9a600;
+    }
+
+    &:active{
+        transition: 0s;
+        background-color: #d09400;
+    }
+}
+
 .estimate-cost-panel{
     display: flex;
     flex-direction: column;

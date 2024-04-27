@@ -3,6 +3,7 @@ import DefaultAvatar from '../img/DefaultAvatar.png'
 import { useStateContext } from '../contexts/ContextProvider';
 import axiosClient from '../axios';
 import { useNavigate } from 'react-router-dom';
+import SwiftCargusLogo from '../img/SwiftCargusLogo.png'
 
 function Header() {
   const { setCurrentUser, setUserToken } = useStateContext();
@@ -21,7 +22,8 @@ function Header() {
 
   return (
     <div className = "header">
-        <div>
+        <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+          <img src={SwiftCargusLogo} style={{ width: '30px', height: '30px'}}></img> 
           <span>Swift</span> <span style={{color: '#ffb703'}}>Cargus</span>
         </div>
         <div className = 'buttons'>

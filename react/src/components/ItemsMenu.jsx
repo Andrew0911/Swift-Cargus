@@ -2,8 +2,7 @@ import Tab from "./Tab"
 import AWB from '../img/AWB.png'
 import Tracking from '../img/Tracking.png'
 import Dashboard from '../img/Dashboard.png'
-import { useEffect, useState } from "react";
-
+import PrintIcon from '../img/Print.png';
 
 function ItemsMenu() {
   return (
@@ -19,6 +18,10 @@ function ItemsMenu() {
         <Tab 
           logo = {Tracking} 
           title = 'Tracking'
+        />
+        <Tab 
+          logo = {PrintIcon} 
+          title = 'Print'
         />
     </div>
   )

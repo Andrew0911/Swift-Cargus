@@ -31,4 +31,19 @@ class AddressController extends Controller
                         ->where('ZipCode', $zipCode)
                         ->first();
     }
+
+    public static function findAddressById(int $addressId) : ?Address
+    {
+        return Address::where("addressId", $addressId)->first();
+    }
+
+    public static function getLocalityById(int $localityId) : ?Locality
+    {
+        return Locality::where('LocalityId', $localityId)->first();
+    }
+
+    public static function getCountyById(int $countyId) : ?County
+    {
+        return County::where('CountyId', $countyId)->first();
+    }
 }

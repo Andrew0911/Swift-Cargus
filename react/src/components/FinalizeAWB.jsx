@@ -17,7 +17,11 @@ function FinalizeAWB() {
     }
 
     const redirectToPrint = () => {
-        navigate(`/awb-print?awbNumber=${awbNumber}`);
+        navigate(`/print?awbNumber=${awbNumber}`);
+    }
+
+    const redirectToTracking = () => {
+        navigate(`/tracking?awbNumber=${awbNumber}`);
     }
 
     return (
@@ -43,7 +47,7 @@ function FinalizeAWB() {
                     <span style={{paddingLeft: '3vw'}}> Print AWB </span>
                 </button>
                 
-                <button onClick={() => redirect('Tracking')}> 
+                <button onClick={() => redirectToTracking()}> 
                     <img src={FinalizeTrackingIcon}></img> 
                     <span style={{paddingLeft: '3vw'}}> Track AWB </span> 
                 </button>

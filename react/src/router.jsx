@@ -8,6 +8,7 @@ import AWB from "./components/AWB";
 import Tracking from "./components/Tracking";
 import Profile from "./components/Profile";
 import FinalizeAWB from "./components/FinalizeAWB";
+import PrintAWB from "./components/PrintAWB";
 
 const router = createBrowserRouter([
     {
@@ -37,7 +38,11 @@ const router = createBrowserRouter([
             {
                 path: 'awb-finalize',
                 element: <FinalizeAWB />
-            }
+            },
+            {
+                path: 'print',
+                element: <PrintAWB />
+            },
         ]
     },
     {
