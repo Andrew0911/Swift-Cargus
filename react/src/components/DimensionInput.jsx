@@ -16,7 +16,7 @@ const DimensionInput = ({ fieldName, setValue }) => {
     <div>
         <div className='title'> {fieldName} </div>
         <div className="custom-input">
-            <input placeholder='0' type="text" onChange={handleInputChange} maxLength="5" />
+            <input placeholder='0' type="text" onChange={handleInputChange} maxLength="2" />
             <span className="suffix">cm</span>
         </div>
     </div>
