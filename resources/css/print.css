@@ -1,0 +1,141 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    width: 700px;
+    height: 450px;
+    border: 2px solid black;
+}
+
+.upper-section{
+    display: grid;
+    grid-template-columns: 1fr 2fr; 
+    grid-template-rows: 1fr 1.5fr;
+    border-bottom: 1px solid black;
+    height: 260px;
+}
+
+.logo{
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    display: grid;
+    grid-template-rows: 4.5fr 1fr;
+}
+
+.logo-name{
+    border-bottom: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.awb{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    font-weight: 650;
+}
+
+.awb-text{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid black;
+}
+
+.awb-number{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.barcode{
+    border-bottom: 1px solid black;
+    display: grid;
+    grid-template-columns: 7fr 1fr;
+    align-items: center;
+    justify-content: center;
+}
+
+.package-count{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-right: 30px;
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.sender{
+    border-right: 1px solid black;
+    display: grid;
+    grid-template-rows: 1fr 2fr 1fr 1fr 1fr;
+    padding: 5px;
+    font-size: 14px;
+}
+
+.recipient{
+    padding-left: 15px;
+    padding-bottom: 15px;
+    display: grid;
+    font-size: 16px;
+    align-items: center;
+    grid-template-rows: 2fr 1fr 1fr;
+}
+
+.recipient-county-locality{
+    font-size: 28px;
+    font-weight: 600;
+}
+
+
+.bottom-section{
+    display: grid;
+    grid-template-columns: 5fr 2fr;
+    height: 190px;
+}
+
+.content{
+    border-right: 1px solid black;
+    display: grid;
+    grid-template-rows: 5fr 1fr;
+}
+
+.content-info{
+    padding: 15px;
+    padding-top: 25px;
+    border-bottom: 1px solid black;
+    display: grid;
+
+}
+
+.date{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 550;
+}
+
+.qr-code{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bold-550{
+    font-weight: 550;
+}
+
+.bold-650{
+    font-weight: 650;
+}
+
+body{
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 90vh;
+    font-family: "Quicksand";
+    flex-direction: column;
+}

@@ -193,7 +193,7 @@ class AwbController extends Controller
         ]);
     }
 
-    public function getPrintingDetails(PrintAwbRequest $request) : Response
+    public function getPrintingDetails(PrintAwbRequest $request) //: Response
     {
         $userId = auth()->user()->id;
         $clientId = ClientRepository::getClientId($userId);
@@ -220,6 +220,8 @@ class AwbController extends Controller
             $optionNamesArray[] = Option::where('Code', $option)->value('Name');
         }
         $optionNames = implode(', ', $optionNamesArray) != '' ? implode(', ', $optionNamesArray) : 'None';
+
+        return view('print.printAWB');
 
         return response([
             'awbNumber' => $awb->Awb,
