@@ -252,4 +252,51 @@ class AwbController extends Controller
         ]);
     }
 
+    public function getTrackingDetails(PrintAwbRequest $request) : Response
+    {
+        $userId = auth()->user()->id;
+        $clientId = ClientRepository::getClientId($userId);
+        $awb = Awb::where('ClientId', $clientId)->where('Awb', $request->awb)->first();
+
+        if(!$awb){
+            return response(['message' => 'This AWB is not associated with your account']);
+        }
+        
+        $sender = Sender::where('SenderId', $awb->SenderId)->first();
+        $senderAddress = AddressController::findAddressById($sender->AddressId);
+        $senderCounty = AddressController::getCountyById($senderAddress->CountyId)->Name;
+        $senderLocality = AddressController::getLocalityById($senderAddress->LocalityId)->Name;
+
+        $recipient = Recipient::where('RecipientId', $awb->RecipientId)->first();
+        $recipientAddress = AddressController::findAddressById($recipient->AddressId);
+        $recipientCounty = AddressController::getCountyById($recipientAddress->CountyId)->Name;
+        $recipientLocality = AddressController::getLocalityById($recipientAddress->LocalityId)->Name;
+
+        [$senderLatitude, $senderLongitude] = AddressController::getAddressCoordinates($senderCounty, $senderLocality, $senderAddress->Street, $senderAddress->Nr, $senderAddress->ZipCode);
+        [$recipientLatitude, $recipientLongitude] = AddressController::getAddressCoordinates($recipientCounty, $recipientLocality, $recipientAddress->Street, $recipientAddress->Nr, $recipientAddress->ZipCode);
+
+        $formattedSenderAddress = AddressController::formatAddressDetails($senderCounty, $senderLocality, $senderAddress->Street, $senderAddress->Nr, $senderAddress->ZipCode);
+        $formattedRecipientAddress =  AddressController::formatAddressDetails($recipientCounty, $recipientLocality, $recipientAddress->Street, $recipientAddress->Nr, $recipientAddress->ZipCode);
+
+        $statusName = Status::where('StatusId', $awb->StatusId)->value('Name');
+
+        return response([
+            'senderName' => $sender->Name,
+            'senderPhone' => $sender->Phone,
+            'senderEmail' => $sender->Email,
+            'senderAddress' => $formattedSenderAddress,
+            'senderLatitude' => $senderLatitude,
+            'senderLongitude' => $senderLongitude,
+
+            'recipientName' => $recipient->Name,
+            'recipientPhone' => $recipient->Phone,
+            'recipientEmail' => $recipient->Email,
+            'recipientAddress' => $formattedRecipientAddress,
+            'recipientLatitude' => $recipientLatitude,
+            'recipientLongitude' => $recipientLongitude,
+
+            'status' => $statusName
+        ]);
+    }
+
 }

@@ -625,7 +625,7 @@ function AWB() {
            <div className='cost'> <div>{'Package Number:'}</div> <div>{cost['AdditionalPackagesCost'] + ' RON'} </div></div>
            <div className='cost'> <div>{'Options:'}</div> <div>{cost['OptionsCost'] + ' RON'} </div></div>
            
-           <div className='cost' style={{borderTop: '1px solid #135a76', paddingTop: '5px'}}> <div>{'Cost without VAT::'}</div> <div>{cost['CostNoVat'] + ' RON'} </div></div>
+           <div className='cost' style={{borderTop: '1px solid #135a76', paddingTop: '5px'}}> <div>{'Cost without VAT:'}</div> <div>{cost['CostNoVat'] + ' RON'} </div></div>
            <div className='cost'> <div>{'VAT:'}</div> <div>{cost['Vat'] + ' RON'} </div></div>
            <div className='cost' style={{fontWeight: '550', color: 'var(--yellow-color)'}}> <div>{'Total cost:'}</div> <div>{cost['TotalCost'] + ' RON'} </div></div>
 

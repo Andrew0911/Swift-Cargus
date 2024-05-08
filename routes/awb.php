@@ -9,3 +9,4 @@ Route::get('/get-awbs', [AwbController::class, 'getClientAwbs']);
 Route::get('/get-each-status-awb-count', [AwbController::class, 'getEachStatusAwbCount']);
 Route::get('/estimate-cost', [AwbController::class, 'estimateAwbCost']);
 Route::get('/print-details', [AwbController::class, 'getPrintingDetails']);
+Route::get('/tracking-details', [AwbController::class, 'getTrackingDetails']);

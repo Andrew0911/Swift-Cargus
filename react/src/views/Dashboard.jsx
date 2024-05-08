@@ -79,7 +79,6 @@ export default function Dashboard() {
           </>) : 
           (
             <div className='center' style={{fontSize: '26px', color: 'var(--yellow-color)'}}>  Currently, there are no AWBs associated with your account... </div>
-
           )
         )}
       </div>    
