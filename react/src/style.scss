@@ -683,7 +683,7 @@
         border: none;
         border-radius: 5px;
         font-family: "Quicksand", sans-serif;
-        font-size: 16px;
+        font-size: 18px;
         transition: 0.3s;
 
         &:hover{
@@ -705,7 +705,7 @@
         background-color: white;
         border-radius: 5px;
         font-family: "Quicksand", sans-serif;
-        font-size: 16px;
+        font-size: 18px;
         transition: 0.3s;
         animation: bounce-more 1s;
         position: relative;
@@ -730,7 +730,7 @@
     border: none;
     border-radius: 5px;
     font-family: "Quicksand", sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     transition: 0.3s;
     animation: bounce-more 1s;
 
@@ -994,6 +994,17 @@
     align-items: center;
     width: 90vw;
     height: 75vh;
+}
+
+.center-tracking{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 94vw;
+    height: 74.5vh;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999999;
+    position: fixed;
 }
 
 .headers{

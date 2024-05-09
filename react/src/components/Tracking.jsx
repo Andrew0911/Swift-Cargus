@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import "leaflet/dist/leaflet.css";
 import axiosClient from '../axios';
+import PropagateLoader from "react-spinners/PropagateLoader";
 
 function Tracking() {
   
@@ -14,6 +15,7 @@ function Tracking() {
   const [awb, setAwb] = useState('');
   const [trackingDetails, setTrackingDetails] = useState({});
   const [statusColor, setStatusColor] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const updateAwb = async () => {
@@ -36,6 +38,12 @@ function Tracking() {
   };
 
   const trackAWB = async (ev) => {
+    setIsLoading(true); 
+
+    setTimeout(async () => {
+      setIsLoading(false);
+    }, 1800);
+
     ev.preventDefault();
     try {
       const { data: awbDetails } = await axiosClient.get('/awb/tracking-details', { params: {
@@ -66,6 +74,16 @@ function Tracking() {
       <div className='page-header'>AWB Tracking</div>
       <br/> <br/> <br/>
 
+      {isLoading && 
+        <div className='center-tracking'>
+          <PropagateLoader
+            size = '30px'
+            color = '#135a76'
+            speedMultiplier={1.15}
+          />
+        </div>
+      }
+
       <div style={{display: 'flex', gap: '3vw'}}>
         <div className='search-and-map-container'> 
           <div className='search'>  
@@ -78,8 +96,8 @@ function Tracking() {
               onChange={handleInputChange} 
               maxLength="10"
             />
-            
-            <button className='dynamic-button' onClick={(ev) => trackAWB(ev)}> 
+              
+            <button className='dynamic-button' onClick={(ev) => trackAWB(ev)} disabled={awb.length !== 10}> 
               Track
             </button>
           </div>
@@ -144,7 +162,7 @@ function Tracking() {
 
             {trackingDetails.status ? <span style={{color: statusColor}}> {trackingDetails.status} </span> : '-'} 
           </div>
-          
+
         </div>
       </div>
     </>

@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import SwiftCargusLogo from '../img/SwiftCargusLogo.png'
 import { useLocation } from 'react-router-dom';
 import axiosClient from '../axios';
+import parse from 'html-react-parser';
 
 function PrintAWB() {
 
@@ -64,16 +65,15 @@ function PrintAWB() {
           onChange={handleInputChange} 
           maxLength="10"
         />
-        {awb.length === 10 &&
-          <button className='dynamic-button' onClick={(ev) => printAWB(ev)}> 
-            Print
-          </button>
-        }
+        
+        <button className='dynamic-button' onClick={(ev) => printAWB(ev)} disabled={awb.length !== 10}> 
+          Print
+        </button>
       </div>
       
-
-      {awbPrintDetails.awbNumber && 
-        <div> Succes Bossule </div>
+      <br/> <br/> <br/> <br/>
+      {awbPrintDetails.html && 
+        parse(awbPrintDetails.html)
       }
     </>
   )

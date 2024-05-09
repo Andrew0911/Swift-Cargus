@@ -193,7 +193,7 @@ class AwbController extends Controller
         ]);
     }
 
-    public function getPrintingDetails(PrintAwbRequest $request) //: Response
+    public function getPrintingDetails(PrintAwbRequest $request)
     {
         $userId = auth()->user()->id;
         $clientId = ClientRepository::getClientId($userId);
@@ -202,8 +202,6 @@ class AwbController extends Controller
         if(!$awb){
             return response(['message' => 'This AWB is not associated with your account']);
         }
-
-        $optionNamesArray = [];
         
         $sender = Sender::where('SenderId', $awb->SenderId)->first();
         $senderAddress = AddressController::findAddressById($sender->AddressId);
@@ -216,15 +214,9 @@ class AwbController extends Controller
         $recipientLocality = AddressController::getLocalityById($recipientAddress->LocalityId)->Name;
         
         $serviceName = $awb->ServiceId == 1 ? 'Standard' : 'Heavy';
-        foreach(str_split($awb->Options) as $option) {
-            $optionNamesArray[] = Option::where('Code', $option)->value('Name');
-        }
-        $optionNames = implode(', ', $optionNamesArray) != '' ? implode(', ', $optionNamesArray) : 'None';
 
-        return view('print.printAWB');
-
-        return response([
-            'awbNumber' => $awb->Awb,
+        $html = view('print.printAWB')->with([
+            'awbNumber' => strval($awb->Awb),
 
             'senderName' => $sender->Name,
             'senderPhone' => $sender->Phone,
@@ -244,7 +236,7 @@ class AwbController extends Controller
 
             'date' => $awb->Date,
             'service' => $serviceName,
-            'options' => $optionNames,
+            'options' => $awb->Options == '' ? '-' : $awb->Options,
             'value' => $awb->Value . ' RON',
             'weight' => $awb->Weight,
             'length' => $awb->Length, 
@@ -252,6 +244,8 @@ class AwbController extends Controller
             'height' => $awb->Height,
             'packages' => $awb->PackageNo
         ]);
+
+        return ['html' => $html->render()];
     }
 
     public function getTrackingDetails(PrintAwbRequest $request) : Response
