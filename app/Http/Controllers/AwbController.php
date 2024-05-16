@@ -171,15 +171,15 @@ class AwbController extends Controller
         $volumeRate = floatval(config('costs.volume-rate'));
 
         $volume = $request->length * $request->width * $request->height;
-        $volumeCost = (float) number_format($volume * $volumeRate, 4, '.', '');
-        $weightCost = (float) number_format($request->weight * $weightRate, 4, '.', '');
+        $volumeCost = (float) number_format($volume * $volumeRate, 2, '.', '');
+        $weightCost = (float) number_format($request->weight * $weightRate, 2, '.', '');
 
-        $additionalPackageCost = (float) number_format(($request->packages - 1) * floatval(config('costs.additional-package-cost')), 4, '.', '');
-        $optionsCost = (float) number_format(OptionsService::getTotalOptionsCost($request->options ?? []), 4, '.', '');
+        $additionalPackageCost = (float) number_format(($request->packages - 1) * floatval(config('costs.additional-package-cost')), 2, '.', '');
+        $optionsCost = (float) number_format(OptionsService::getTotalOptionsCost($request->options ?? []), 2, '.', '');
         $vat = intval(config('costs.vat'));
 
-        $costNoVat = (float) number_format($baseRate + $volumeCost + $weightCost + $additionalPackageCost + $optionsCost, 4, '.', '');
-        $vatCost = (float) number_format($vat * $costNoVat / 100, 4, '.', '');
+        $costNoVat = (float) number_format($baseRate + $volumeCost + $weightCost + $additionalPackageCost + $optionsCost, 2, '.', '');
+        $vatCost = (float) number_format($vat * $costNoVat / 100, 2, '.', '');
 
         return response([
             'ServiceCost' => $baseRate,
@@ -189,7 +189,7 @@ class AwbController extends Controller
             'OptionsCost' => $optionsCost,
             'CostNoVat' => $costNoVat,
             'Vat' => $vatCost,
-            'TotalCost' => (float) number_format($costNoVat + $vatCost, 4, '.', '')
+            'TotalCost' => (float) number_format($costNoVat + $vatCost, 2, '.', '')
         ]);
     }
 
