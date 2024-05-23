@@ -4,6 +4,7 @@ import SwiftCargusLogo from '../img/SwiftCargusLogo.png'
 import { useLocation } from 'react-router-dom';
 import axiosClient from '../axios';
 import parse from 'html-react-parser';
+import PropagateLoader from "react-spinners/PropagateLoader";
 
 function PrintAWB() {
 
@@ -12,6 +13,7 @@ function PrintAWB() {
   const awbNumber = searchParams.get('awbNumber');
   const [awb, setAwb] = useState("");
   const [awbPrintDetails, setAwbPrintDetails] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const updateAwb = async () => {
@@ -34,6 +36,13 @@ function PrintAWB() {
   };
 
   const printAWB = async (ev) => {
+
+    setIsLoading(true); 
+
+    setTimeout(async () => {
+      setIsLoading(false);
+    }, 700);
+
     ev.preventDefault();
     try {
       const { data: awbDetails } = await axiosClient.get('/awb/print-details', { params: {
@@ -54,6 +63,18 @@ function PrintAWB() {
 
       <div className='page-header'>AWB Print</div>
       <br/> <br/> <br/>
+
+      {isLoading && 
+        <div className='center-print'>
+          <div style={{marginTop: '30vh'}}>
+            <PropagateLoader
+              size = '30px'
+              color = '#135a76'
+              speedMultiplier={1.15}
+            />
+          </div>
+        </div>
+      }
 
       <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1vw'}}>
         <div style={{fontFamily: 'Quicksand', fontSize: '21px', color: 'var(--yellow-color)'}}> AWB Number </div>

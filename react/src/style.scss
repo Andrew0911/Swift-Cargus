@@ -1007,6 +1007,16 @@
     position: fixed;
 }
 
+.center-print{
+    display: flex;
+    justify-content: center;
+    width: 94vw;
+    height: 81.1vh;
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 9999999;
+    position: fixed;
+}
+
 .headers{
     display: flex;
     justify-content: center;
