@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { useState } from 'react';
 import axiosClient from '../axios';
 import { useStateContext } from '../contexts/ContextProvider';
+import ClipLoader from "react-spinners/ClipLoader";
 
 function Register() {
     const {setCurrentUser, setUserToken} = useStateContext();
@@ -12,9 +13,11 @@ function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState({__html: ''});
+    const [isLoading, setIsLoading] = useState(false);
 
     const submitSignup = async (ev) => {
       ev.preventDefault();
+      setIsLoading(true);
       setError({__html: ''});
       try {
         const { data } = await axiosClient.post('/register', {
@@ -22,9 +25,11 @@ function Register() {
           email: email,
           password: password
         });
+        setIsLoading(false);
         setCurrentUser(data.user)
         setUserToken(data.token)
       } catch (error) {
+        setIsLoading(false);
         if (error.response) {
           const finalErrors = Object.values(error.response.data.errors).reduce((accum, next) => [...accum, ...next], []);
           setError({__html: finalErrors});
@@ -75,7 +80,18 @@ function Register() {
                       onChange={ev => setPassword(ev.target.value)}
                     />
                     
-                    <button>Register</button>
+                    <button>
+                      {
+                        isLoading ?
+                        <ClipLoader
+                          size={20}
+                          color = 'white'
+                          speedMultiplier={0.5}
+                        /> 
+                        :
+                        'Register'
+                      }
+                    </button>
                 </form>
 
                 {error.__html && 

@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import axiosClient from '../axios';
 import { Dropdown } from './Dropdown';
 import SmallField from './SmallField';
+import ClipLoader from "react-spinners/ClipLoader";
 
 function Profile() {
 
@@ -26,6 +27,8 @@ function Profile() {
   const [countyId, setCountyId] = useState(0);
   const [locality, setLocality] = useState('');
   const [localityId, setLocalityId] = useState(0);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchAllCounties = async () => {
@@ -108,8 +111,9 @@ function Profile() {
   }, []);
 
   const handleInformationSave = async (ev) => {
+    
+    setIsLoading(true);
     ev.preventDefault();
-
     try {
       const { data: data } = await axiosClient.post('/save-or-update-client-information', {
           name: name,
@@ -122,8 +126,10 @@ function Profile() {
           nr: nr,
           zipCode: zipCode
       });
+      setIsLoading(false);
       window.location.href = '/profile';
     } catch (error) {
+      setIsLoading(false);
       console.error('Error saving or updating the client data:', error);
     }
   }
@@ -285,7 +291,19 @@ function Profile() {
       </div>
 
       <div className='button-container'>
-        <button onClick={handleInformationSave} style={{fontSize: '18px'}}> Save Information </button>
+        <button onClick={handleInformationSave} style={{fontSize: '18px'}}> 
+          {isLoading ? 
+            <div style={{marginTop: '5px'}}> 
+              <ClipLoader
+                color = 'white'
+                speedMultiplier={0.5}
+                size={30}
+              /> 
+            </div>
+            : 
+            'Save Information'
+          }
+        </button>
       </div>
     </>
   )

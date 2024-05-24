@@ -11,6 +11,7 @@ import QuantityField from './QuantityField.jsx';
 import DimensionInput from './DimensionInput.jsx';
 import SmallField from './SmallField.jsx';
 import { Checkbox } from '@mui/material';
+import ClipLoader from "react-spinners/ClipLoader";
 
 function AWB() {
 
@@ -60,6 +61,8 @@ function AWB() {
 
   const [showCostPanel, setShowCostPanel] = useState(false)
   const [cost, setCost] = useState({});
+
+  const [isSavingAwb, setIsSavingAwb] = useState(false);
   
   // Effect to fetch all counties
   useEffect(() => {
@@ -157,6 +160,7 @@ function AWB() {
   }, [standardServiceType, heavyServiceType]);
 
   const submitAWB = async (ev) => {
+    setIsSavingAwb(true);
     ev.preventDefault();
     try {
         const { data: awbNumber } = await axiosClient.post('/awb/generate-awb', {
@@ -189,8 +193,10 @@ function AWB() {
             width: width, 
             height: height
         });
+        setIsSavingAwb(false);
         window.location.href = `/awb-finalize?awbNumber=${awbNumber.awbNumber}`;    
       } catch (error) {
+      setIsSavingAwb(false);
       console.error('Error generating the AWB', error);
     }
   }
@@ -640,7 +646,20 @@ function AWB() {
             height > 0 &&
             <button className='estimate-cost-button' onClick={(ev) => handleShowCostPanel(ev)}> Estimate Cost </button>
           }
-          <button className='full-button' onClick={(ev) => submitAWB(ev)}> Save AWB </button>
+          <button className='full-button' onClick={(ev) => submitAWB(ev)}> 
+            {
+              isSavingAwb ? 
+              <div style={{marginTop: '5px'}}> 
+                <ClipLoader
+                  color = 'white'
+                  speedMultiplier={0.5}
+                  size={25}
+                /> 
+              </div>
+              :
+              'Save AWB' 
+            }
+          </button>
         </div>
       </div>
 

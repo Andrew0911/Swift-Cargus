@@ -13,22 +13,16 @@ export default function Dashboard() {
   const colors = ["#135a76", "orange", "green"];
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, []);
-
-  useEffect(() => {
-      const fetchAllRows = async () => {
-          try {
-              const { data: fetchedRows } = await axiosClient.get('/awb/get-awbs');
-              setTableData(fetchedRows);
-          } catch (error) {
-              console.error('Error fetching all awbs:', error);
-          }
-      };
-      fetchAllRows();
+    const fetchAllRows = async () => {
+        try {
+            const { data: fetchedRows } = await axiosClient.get('/awb/get-awbs');
+            setTableData(fetchedRows);
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Error fetching all awbs:', error);
+        }
+    };
+    fetchAllRows();
   }, []);
 
   useEffect(() => {
@@ -78,8 +72,7 @@ export default function Dashboard() {
             <DashboardChart data={chartData}/>
           </>) : 
           (
-            <div> </div>
-            // <div className='center' style={{fontSize: '26px', color: 'var(--yellow-color)'}}>  Currently, there are no AWBs associated with your account... </div>
+            <div className='center' style={{fontSize: '26px', color: 'var(--yellow-color)'}}>  Currently, there are no AWBs associated with your account... </div>
           )
         )}
       </div>    

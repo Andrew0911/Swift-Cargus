@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { useState } from 'react';
 import axiosClient from '../axios';
 import { useStateContext } from '../contexts/ContextProvider';
+import ClipLoader from "react-spinners/ClipLoader";
 
 export default function Login() {
     const {setCurrentUser, setUserToken} = useStateContext();
@@ -12,9 +13,11 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [credentialsError, setCredentialsError] = useState({__html: ''});
     const [error, setError] = useState({__html: ''});
+    const [isLoading, setIsLoading] = useState(false);
 
     const submitLogin = async (ev) => {
         ev.preventDefault();
+        setIsLoading(true);
         setError({__html: ''});
         setCredentialsError({__html: ''});
         try {
@@ -22,9 +25,11 @@ export default function Login() {
             email: email,
             password: password
           });
+          setIsLoading(false);
           setCurrentUser(data.user)
           setUserToken(data.token)
         } catch (error) {
+          setIsLoading(false);
           if (error.response.data.error) {
             const finalErrors = Object.values(error.response.data.error);
             setCredentialsError({__html: finalErrors});
@@ -70,7 +75,18 @@ export default function Login() {
                           value={password} 
                           onChange={ev => setPassword(ev.target.value)}
                         />
-                        <button id="login">Login</button>
+                        <button id="login">
+                          {
+                            isLoading ? 
+                            <ClipLoader
+                              size={20}
+                              color = 'white'
+                              speedMultiplier={0.5}
+                            /> 
+                            : 
+                            'Login'
+                          }
+                        </button>
                     </form>
 
                     {credentialsError.__html && 

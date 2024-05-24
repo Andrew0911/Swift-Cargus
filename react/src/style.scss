@@ -60,11 +60,13 @@
             }
 
             button{
+                height: 5vh;
                 background-color: #87ceeb;
                 color: white;
                 padding: 10px;
                 font-weight: bold;
                 font-family: "Quicksand", sans-serif;
+                font-size: 15px;
                 border: none;
                 border-radius: 10px;
                 cursor: pointer;
@@ -719,6 +721,29 @@
             transition: 0s;
             background-color: #F9F6EE;
         }
+    }
+}
+
+.print-button{
+    width: 24vw;
+    height: 6vh;
+    color: var(--yellow-color);
+    border: 1px solid var(--yellow-color);
+    background-color: #F9F6EE;
+    border-radius: 5px;
+    font-family: "Quicksand", sans-serif;
+    font-size: 18px;
+    transition: 0.3s;
+    animation: bounce-more 1s;
+
+    &:hover{
+        background-color: #FAF9F6;
+        cursor: pointer;
+    }
+
+    &:active{
+        transition: 0s;
+        background-color: #F9F6EE;
     }
 }
 

@@ -18,6 +18,9 @@
     </style>
 
     <div class="body">
+
+        <br/><br/><br/>
+
         @for ($i = 1; $i <= $packages; $i++)
             <div class="print-container">
                 <div class="upper-section">
@@ -105,7 +108,7 @@
                 </div>
             </div>
 
-            <br/><br/><br/><br/>
+            <br/><br/><br/>
         @endfor
     </div>
         

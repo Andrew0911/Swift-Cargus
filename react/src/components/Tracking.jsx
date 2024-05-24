@@ -38,18 +38,15 @@ function Tracking() {
   };
 
   const trackAWB = async (ev) => {
+
     setIsLoading(true); 
-
-    setTimeout(async () => {
-      setIsLoading(false);
-    }, 1800);
-
     ev.preventDefault();
     try {
       const { data: awbDetails } = await axiosClient.get('/awb/tracking-details', { params: {
         awb: awb
       }});
       setTrackingDetails(awbDetails);
+      setIsLoading(false);
 
       if(awbDetails.status == 'Processed'){
         setStatusColor('#135a76');
@@ -87,7 +84,7 @@ function Tracking() {
       <div style={{display: 'flex', gap: '3vw'}}>
         <div className='search-and-map-container'> 
           <div className='search'>  
-            <div style={{fontFamily: 'Quicksand', fontSize: '21px', color: 'var(--yellow-color)'}}> AWB Number </div>
+            <div style={{fontFamily: 'Quicksand', fontSize: '21px', color: 'var(--yellow-color)'}}> AWB </div>
             <input 
               className='input-field'
               type='text'
