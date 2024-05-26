@@ -72,7 +72,7 @@ export default function Dashboard() {
             <DashboardChart data={chartData}/>
           </>) : 
           (
-            <div className='center' style={{fontSize: '26px', color: 'var(--yellow-color)'}}>  Currently, there are no AWBs associated with your account... </div>
+            <div className='center' style={{fontSize: '28px', color: 'var(--yellow-color)', fontWeight: '500'}}>  Currently, there are no AWBs associated with your account... </div>
           )
         )}
       </div>    
