@@ -13,6 +13,6 @@ class ZipCodeValidationRule implements Rule
 
     public function message()
     {
-        return 'The :attribute is not a valid Zip Code.';
+        return 'The :attribute must be a valid Romanian zip code.';
     }
 }

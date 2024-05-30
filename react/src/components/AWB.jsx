@@ -12,6 +12,8 @@ import DimensionInput from './DimensionInput.jsx';
 import SmallField from './SmallField.jsx';
 import { Checkbox } from '@mui/material';
 import ClipLoader from "react-spinners/ClipLoader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function AWB() {
 
@@ -63,6 +65,7 @@ function AWB() {
   const [cost, setCost] = useState({});
 
   const [isSavingAwb, setIsSavingAwb] = useState(false);
+  const [awbGenerationErrors, setAwbGenerationErrors] = useState({});
   
   // Effect to fetch all counties
   useEffect(() => {
@@ -134,7 +137,11 @@ function AWB() {
     const fetchServiceOptions = async () => {
       setServiceOptions([]);
       setSelectedOptionsArray([]);
-      if (!standardServiceType && !heavyServiceType) return;
+      if (!standardServiceType && !heavyServiceType)
+      {
+        setSelectedServiceId(0);
+        return;
+      }
       try {
         if(standardServiceType){
           setWeight(1);
@@ -159,8 +166,30 @@ function AWB() {
     fetchServiceOptions();
   }, [standardServiceType, heavyServiceType]);
 
+  const toastError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      style: {
+        height: '10vh',
+        width: '20vw',
+        marginLeft: '-4vw',
+        paddingLeft: '1vw',
+        fontFamily: 'Quicksand, sans serif',
+        fontSize: '19px'
+      }
+    });
+  }
+
   const submitAWB = async (ev) => {
     setIsSavingAwb(true);
+    setAwbGenerationErrors({});
     ev.preventDefault();
     try {
         const { data: awbNumber } = await axiosClient.post('/awb/generate-awb', {
@@ -198,8 +227,100 @@ function AWB() {
       } catch (error) {
       setIsSavingAwb(false);
       console.error('Error generating the AWB', error);
+
+      if(error.response.data.errors) {
+        const finalErrors = error.response.data.errors;
+        setAwbGenerationErrors(finalErrors);
+      }
     }
   }
+
+  useEffect(() => {
+
+    if(Object.keys(awbGenerationErrors).length > 0) {
+
+      var shownErrors = 0;
+
+      // sender errors
+      if(awbGenerationErrors.senderEmail && senderEmail) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(awbGenerationErrors.senderEmail[0]);
+        }
+      }
+
+      if(awbGenerationErrors.senderPhone && senderPhone) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(awbGenerationErrors.senderPhone[0]);
+        }
+      }
+
+      if(awbGenerationErrors.senderZipCode && senderZipCode) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(awbGenerationErrors.senderZipCode[0]);
+        }
+      }
+
+      // recipient errors
+      if(awbGenerationErrors.recipientEmail && recipientEmail) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(awbGenerationErrors.recipientEmail[0]);
+        }
+      }
+
+      if(awbGenerationErrors.recipientPhone && recipientPhone) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(awbGenerationErrors.recipientPhone[0]);
+        }
+      }
+
+      if(awbGenerationErrors.recipientZipCode && recipientZipCode) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(awbGenerationErrors.recipientZipCode[0]);
+        }
+      }
+
+      // service 
+      if(awbGenerationErrors.serviceId && shownErrors === 0) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError('Please select a service type');
+        }
+      }
+
+      // dimensions errors
+      if(awbGenerationErrors.width && selectedServiceId != 0) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(awbGenerationErrors.width[0]);
+        }
+      }
+
+      if(awbGenerationErrors.length && selectedServiceId != 0) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(awbGenerationErrors.length[0]);
+        }
+      }
+      
+      if(awbGenerationErrors.height && selectedServiceId != 0) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(awbGenerationErrors.height[0]);
+        }
+      }
+
+      // general error
+      if(shownErrors === 0) {
+        toastError('Failed to generate AWB');
+      }
+    }
+  }, [awbGenerationErrors]);
 
   useEffect(() => {
     const fetchSenderInformation = async () => {
@@ -287,6 +408,8 @@ function AWB() {
         <link rel="icon" href={SwiftCargusLogo} type="image/png" />
       </Helmet>
 
+      <ToastContainer/>
+
       <div className='page-header'>AWB Generation</div>
 
       <div>
@@ -305,6 +428,7 @@ function AWB() {
                   setFieldText = {setSenderName}
                   type = 'text'
                   placeholder = 'Sender'
+                  hasError = {awbGenerationErrors.senderName ? true : false}
                 />
                 <Field
                   aboveFieldText = 'Contact Person'
@@ -319,6 +443,7 @@ function AWB() {
                   setFieldText = {setSenderEmail}
                   type = 'email'
                   placeholder = 'Sender'
+                  hasError = {awbGenerationErrors.senderEmail ? true : false}
                 />
                 <Field
                   aboveFieldText = 'Phone*'
@@ -326,6 +451,7 @@ function AWB() {
                   setFieldText = {setSenderPhone}
                   type = 'text'
                   placeholder = 'Sender'
+                  hasError = {awbGenerationErrors.senderPhone ? true : false}
                 />
               </div>
 
@@ -339,6 +465,7 @@ function AWB() {
                   menu={allCounties.map(county => county.Name)}
                   setFieldId = {setSenderCountyId}
                   menuId={allCounties.map(county => county.CountyId)}
+                  hasError = {awbGenerationErrors.senderCountyId ? true : false}
                 />
                 <Dropdown
                   aboveFieldText='Locality*'
@@ -347,6 +474,7 @@ function AWB() {
                   menu={senderCounty ? (allSenderLocalities.map(locality => locality.Name)) : ['No localities available']}
                   setFieldId = {setSenderLocalityId}
                   menuId={allSenderLocalities.map(locality => locality.LocalityId)}
+                  hasError = {awbGenerationErrors.senderLocalityId ? true : false}
                 />
                 <Field
                   aboveFieldText = 'Street*'
@@ -354,6 +482,7 @@ function AWB() {
                   setFieldText = {setSenderStreet}
                   type = 'text'
                   placeholder = 'Sender'
+                  hasError = {awbGenerationErrors.senderStreet ? true : false}
                 />
                 <div className='zipcode_number'>
                   <SmallField
@@ -362,6 +491,7 @@ function AWB() {
                     setFieldText = {setSenderNr}
                     type = 'text'
                     placeholder = 'Sender'
+                    hasError = {awbGenerationErrors.senderNr ? true : false}
                   />
                   <SmallField
                     aboveFieldText = 'Zip Code*'
@@ -369,6 +499,7 @@ function AWB() {
                     setFieldText = {setSenderZipCode}
                     type = 'text'
                     placeholder = ''
+                    hasError = {awbGenerationErrors.senderZipCode ? true : false}
                   />
                 </div>
               </div>
@@ -401,6 +532,7 @@ function AWB() {
                   setFieldText = {setRecipientName}
                   type = 'text'
                   placeholder = 'Recipient'
+                  hasError = {awbGenerationErrors.recipientName ? true : false}
                 />
                 <Field
                   aboveFieldText = 'Contact Person'
@@ -415,6 +547,7 @@ function AWB() {
                   setFieldText = {setRecipientEmail}
                   type = 'email'
                   placeholder = 'Recipient'
+                  hasError = {awbGenerationErrors.recipientEmail ? true : false}
                 />
                 <Field
                   aboveFieldText = 'Phone*'
@@ -422,6 +555,7 @@ function AWB() {
                   setFieldText = {setRecipientPhone}
                   type = 'text'
                   placeholder = 'Recipient'
+                  hasError = {awbGenerationErrors.recipientPhone ? true : false}
                 />
               </div>
 
@@ -435,6 +569,7 @@ function AWB() {
                   menu={allCounties.map(county => county.Name)}
                   setFieldId = {setRecipientCountyId}
                   menuId={allCounties.map(county => county.CountyId)}
+                  hasError = {awbGenerationErrors.recipientCountyId ? true : false}
                 />
                 <Dropdown
                   aboveFieldText='Locality*'
@@ -443,6 +578,7 @@ function AWB() {
                   menu={recipientCounty ? allRecipientLocalities.map(locality => locality.Name) : ['No localities available']}
                   setFieldId = {setRecipientLocalityId}
                   menuId={allRecipientLocalities.map(locality => locality.LocalityId)}
+                  hasError = {awbGenerationErrors.recipientLocalityId ? true : false}
                 />
                 <Field
                   aboveFieldText = 'Street*'
@@ -450,6 +586,7 @@ function AWB() {
                   setFieldText = {setRecipientStreet}
                   type = 'text'
                   placeholder = 'Recipient'
+                  hasError = {awbGenerationErrors.recipientStreet ? true : false}
                 />
                 <div className='zipcode_number'>
                   <SmallField
@@ -458,6 +595,7 @@ function AWB() {
                     setFieldText = {setRecipientNr}
                     type = 'text'
                     placeholder = 'Recipient'
+                    hasError = {awbGenerationErrors.recipientNr ? true : false}
                   />
                   <SmallField
                     aboveFieldText = 'Zip Code*'
@@ -465,6 +603,7 @@ function AWB() {
                     setFieldText = {setRecipientZipCode}
                     type = 'text'
                     placeholder = ''
+                    hasError = {awbGenerationErrors.recipientZipCode ? true : false}
                   />
                 </div>
               </div>
@@ -592,16 +731,19 @@ function AWB() {
                     <DimensionInput
                       fieldName={'Length'}
                       setValue={setLength}
+                      hasError = {awbGenerationErrors.length ? true : false}
                     />
 
                     <DimensionInput
                       fieldName={'Width'}
                       setValue={setWidth}
+                      hasError = {awbGenerationErrors.width ? true : false}
                     />
 
                     <DimensionInput
                       fieldName={'Height'}
                       setValue={setHeight}
+                      hasError = {awbGenerationErrors.height ? true : false}
                     />
                     
                   </div>

@@ -2,7 +2,7 @@ import { capitalize } from '@mui/material';
 import React from 'react'
 
 function Field(props) {
-    const { aboveFieldText, fieldText, setFieldText, fieldType, placeholder, width, height, aboveFieldsize, fontSize} = props;
+    const { aboveFieldText, fieldText, setFieldText, fieldType, placeholder, width, height, aboveFieldsize, fontSize, hasError = false } = props;
     return (
         <div>
             <p 
@@ -15,7 +15,7 @@ function Field(props) {
                 value={fieldText} 
                 onChange={ev => setFieldText(ev.target.value)}
                 placeholder={placeholder ? (placeholder + ' ' + aboveFieldText.replace(/\*/g, '').toLowerCase() + '...') : capitalize(aboveFieldText.replace(/\*/g, '').toLowerCase()) + '...'}
-                style={{ width: width, height: height, fontSize: fontSize }}
+                style={{ width: width, height: height, fontSize: fontSize, borderColor: hasError ? 'red' : '' }}
             />
         </div>
     )

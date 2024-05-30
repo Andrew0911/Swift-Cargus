@@ -7,6 +7,8 @@ import axiosClient from '../axios';
 import { Dropdown } from './Dropdown';
 import SmallField from './SmallField';
 import ClipLoader from "react-spinners/ClipLoader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Profile() {
 
@@ -29,6 +31,7 @@ function Profile() {
   const [localityId, setLocalityId] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [saveOrUpdateProfileInformationErrors, setSaveOrUpdateProfileInformationErrors] = useState({});
 
   useEffect(() => {
     const fetchAllCounties = async () => {
@@ -111,7 +114,7 @@ function Profile() {
   }, []);
 
   const handleInformationSave = async (ev) => {
-    
+    setSaveOrUpdateProfileInformationErrors({});
     setIsLoading(true);
     ev.preventDefault();
     try {
@@ -127,12 +130,92 @@ function Profile() {
           zipCode: zipCode
       });
       setIsLoading(false);
-      window.location.href = '/profile';
+
+      toast.success('Profile Information saved successfully.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        style: {
+          height: '10vh',
+          width: '20vw',
+          marginLeft: '-4vw',
+          paddingLeft: '1vw',
+          fontFamily: 'Quicksand, sans serif',
+          fontSize: '19px'
+        }
+      })
+
     } catch (error) {
       setIsLoading(false);
       console.error('Error saving or updating the client data:', error);
+
+      if(error.response.data.errors) {
+        const finalErrors = error.response.data.errors;
+        setSaveOrUpdateProfileInformationErrors(finalErrors);
+      }
     }
   }
+
+  const toastError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      style: {
+        height: '10vh',
+        width: '20vw',
+        marginLeft: '-4vw',
+        paddingLeft: '1vw',
+        fontFamily: 'Quicksand, sans serif',
+        fontSize: '19px'
+      }
+    });
+  }
+
+  useEffect(() => {
+
+    if(Object.keys(saveOrUpdateProfileInformationErrors).length > 0) {
+
+      var shownErrors = 0;
+
+      if(saveOrUpdateProfileInformationErrors.email && email) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(saveOrUpdateProfileInformationErrors.email[0]);
+        }
+      }
+
+      if(saveOrUpdateProfileInformationErrors.phone && phone) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(saveOrUpdateProfileInformationErrors.phone[0]);
+        }
+      }
+
+      if(saveOrUpdateProfileInformationErrors.zipCode && zipCode) {
+        shownErrors += 1;
+        if(shownErrors < 4){
+          toastError(saveOrUpdateProfileInformationErrors.zipCode[0]);
+        }
+      }
+
+      // general error
+      if(shownErrors === 0) {
+        toastError('Failed to save profile information');
+      }
+    }
+
+  }, [saveOrUpdateProfileInformationErrors])
 
   return (
     <>
@@ -140,6 +223,8 @@ function Profile() {
         <title>Profile</title>
         <link rel="icon" href={SwiftCargusLogo} type="image/png" />
       </Helmet>
+
+      <ToastContainer/>
 
       <div className='page-header'>Profile</div>
       
@@ -190,6 +275,7 @@ function Profile() {
             height = '4vh'
             aboveFieldsize = '18px'
             fontSize = '18px'
+            hasError = {saveOrUpdateProfileInformationErrors.name ? true : false }
           />
           <Field
             aboveFieldText = 'Contact Person'
@@ -212,6 +298,7 @@ function Profile() {
             height = '4vh'
             aboveFieldsize = '18px'
             fontSize = '18px'
+            hasError = {saveOrUpdateProfileInformationErrors.email ? true : false }
           />
           <Field
             aboveFieldText = 'Phone*'
@@ -223,6 +310,7 @@ function Profile() {
             height = '4vh'
             aboveFieldsize = '18px'
             fontSize = '18px'
+            hasError = {saveOrUpdateProfileInformationErrors.phone ? true : false }
           />
         </div>
 
@@ -238,6 +326,7 @@ function Profile() {
             menuId={allCounties.map(county => county.CountyId)}
             width='24vw'
             height='5.8vh'
+            hasError = {saveOrUpdateProfileInformationErrors.countyId ? true : false }
           />
           <Dropdown
             aboveFieldText='Locality*'
@@ -250,6 +339,7 @@ function Profile() {
             menuId={allLocalities.map(locality => locality.LocalityId)}
             width='24vw'
             height='5.8vh'
+            hasError = {saveOrUpdateProfileInformationErrors.localityId ? true : false }
           />
           <Field
             aboveFieldText = 'Street*'
@@ -261,6 +351,7 @@ function Profile() {
             height = '4vh'
             aboveFieldsize = '18px'
             fontSize = '18px'
+            hasError = {saveOrUpdateProfileInformationErrors.street ? true : false }
           />
 
           <div style={{display: 'flex', gap: '3vw'}}>
@@ -274,6 +365,7 @@ function Profile() {
               height = '4vh'
               aboveFieldsize = '18px'
               fontSize = '18px'
+              hasError = {saveOrUpdateProfileInformationErrors.nr ? true : false }
             />
             <SmallField
               aboveFieldText = 'ZipCode*'
@@ -285,6 +377,7 @@ function Profile() {
               height = '4vh'
               aboveFieldsize = '18px'
               fontSize = '18px'
+              hasError = {saveOrUpdateProfileInformationErrors.zipCode ? true : false }
             />
           </div>
         </div>

@@ -6,6 +6,8 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import "leaflet/dist/leaflet.css";
 import axiosClient from '../axios';
 import PropagateLoader from "react-spinners/PropagateLoader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Tracking() {
   
@@ -16,6 +18,7 @@ function Tracking() {
   const [trackingDetails, setTrackingDetails] = useState({});
   const [statusColor, setStatusColor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [awbTrackingErrors, setAwbTrackingErrors] = useState({});
 
   useEffect(() => {
     const updateAwb = async () => {
@@ -40,6 +43,8 @@ function Tracking() {
   const trackAWB = async (ev) => {
 
     setIsLoading(true); 
+    setAwbTrackingErrors({});
+    setTrackingDetails({});
     ev.preventDefault();
     try {
       const { data: awbDetails } = await axiosClient.get('/awb/tracking-details', { params: {
@@ -57,9 +62,48 @@ function Tracking() {
       }
 
     } catch (error) {
-    console.error('Error tracking the AWB', error);
+      setIsLoading(false);
+      console.error('Error tracking the AWB', error);
+
+      if(error.response.data.errors) {
+        const finalErrors = error.response.data.errors;
+        setAwbTrackingErrors(finalErrors);
+      }
   }
   }
+
+  const toastError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      style: {
+        height: '10vh',
+        width: '20vw',
+        marginLeft: '-4vw',
+        paddingLeft: '1vw',
+        fontFamily: 'Quicksand, sans serif',
+        fontSize: '19px'
+      }
+    });
+  }
+
+  useEffect(() => {
+
+    if(Object.keys(awbTrackingErrors).length > 0) {
+      toastError(awbTrackingErrors.awb[0]);
+    } else {
+      if(trackingDetails.message){
+        toastError(trackingDetails.message);
+      }
+    }
+
+  }, [awbTrackingErrors, trackingDetails]);
 
   return (
     <>
@@ -67,6 +111,8 @@ function Tracking() {
         <title>Tracking</title>
         <link rel="icon" href={SwiftCargusLogo} type="image/png" />
       </Helmet>
+
+      <ToastContainer/>
 
       <div className='page-header'>AWB Tracking</div>
       <br/> <br/> <br/>
@@ -89,7 +135,7 @@ function Tracking() {
               className='input-field'
               type='text'
               value={awb} 
-              style={{ width: '23vw', height: '4vh', fontSize: '18px' }}
+              style={{ width: '23vw', height: '4vh', fontSize: '18px', borderColor: awbTrackingErrors.awb || trackingDetails.message ? 'red' : '' }}
               onChange={handleInputChange} 
               maxLength="10"
             />

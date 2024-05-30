@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 
-export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFieldId, menuId, aboveFieldsize, width, height, fontSize}) => {
+export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFieldId, menuId, aboveFieldsize, width, height, fontSize, hasError = false }) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
     setOpen(!open);
@@ -17,7 +17,7 @@ export const Dropdown = ({ aboveFieldText, fieldText, setFieldText, menu, setFie
               className='above-input-field'
               style={{ fontSize: aboveFieldsize }}
             > {aboveFieldText} </p>
-            <button className="dropdown-button" style={{ width: width, height: height }} onClick={handleOpen}>
+            <button className="dropdown-button" style={{ width: width, height: height, borderColor: hasError ? 'red' : '' }} onClick={handleOpen}>
                 <div className="dropdown-text">
                     <div style={{ fontSize: fontSize }}>
                         {fieldText || `Choose a ${aboveFieldText.replace(/\*/g, '').toLowerCase()}...`}

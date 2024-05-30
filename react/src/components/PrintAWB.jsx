@@ -7,6 +7,8 @@ import parse from 'html-react-parser';
 import PropagateLoader from "react-spinners/PropagateLoader";
 import { useReactToPrint } from "react-to-print";
 import ClipLoader from "react-spinners/ClipLoader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function PrintAWB() {
 
@@ -18,6 +20,8 @@ function PrintAWB() {
   const [isLoading, setIsLoading] = useState(false);
   const contentToPrint = useRef(null);
   const [isOpeningPrintingInterface, setIsOpeningPrintingInterface] = useState(false);
+  const [awbPrintErrors, setAwbPrintErrors] = useState({});
+
 
   const handlePrint = useReactToPrint({
     documentTitle: "AWB",
@@ -45,6 +49,8 @@ function PrintAWB() {
 
   const printAWB = async (ev) => {
 
+    setAwbPrintDetails({});
+    setAwbPrintErrors({});
     setIsLoading(true); 
     ev.preventDefault();
     try {
@@ -54,10 +60,48 @@ function PrintAWB() {
       setAwbPrintDetails(awbDetails);
       setIsLoading(false);
     } catch (error) {
-    setIsLoading(false);
-    console.error('Error printing the AWB', error);
+      setIsLoading(false);
+      console.error('Error printing the AWB', error);
+
+      if(error.response.data.errors) {
+        const finalErrors = error.response.data.errors;
+        setAwbPrintErrors(finalErrors);
+      }
   }
   }
+
+  const toastError = (message) => {
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      style: {
+        height: '10vh',
+        width: '20vw',
+        marginLeft: '-4vw',
+        paddingLeft: '1vw',
+        fontFamily: 'Quicksand, sans serif',
+        fontSize: '19px'
+      }
+    });
+  }
+
+  useEffect(() => {
+
+    if(Object.keys(awbPrintErrors).length > 0) {
+      toastError(awbPrintErrors.awb[0]);
+    } else {
+      if(awbPrintDetails.message){
+        toastError(awbPrintDetails.message);
+      }
+    }
+
+  }, [awbPrintErrors, awbPrintDetails]);
 
   return (
     <>
@@ -65,6 +109,8 @@ function PrintAWB() {
         <title>Print</title>
         <link rel="icon" href={SwiftCargusLogo} type="image/png" />
       </Helmet>
+
+      <ToastContainer/>
 
       <div className='page-header'>AWB Print</div>
       <br/> <br/> <br/>
@@ -87,7 +133,7 @@ function PrintAWB() {
           className='input-field'
           type='text'
           value={awb} 
-          style={{ width: '23vw', height: '4vh', fontSize: '18px' }}
+          style={{ width: '23vw', height: '4vh', fontSize: '18px', borderColor: awbPrintErrors.awb || awbPrintDetails.message ? 'red' : '' }}
           onChange={handleInputChange} 
           maxLength="10"
         />
