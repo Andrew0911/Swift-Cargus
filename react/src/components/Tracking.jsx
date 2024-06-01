@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Helmet } from "react-helmet";
 import SwiftCargusLogo from '../img/SwiftCargusLogo.png'
+import GoogleMapsIcon from '../img/GoogleMapsIcon.png'
+import WazeIcon from '../img/WazeIcon.png'
 import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import "leaflet/dist/leaflet.css";
@@ -150,6 +152,8 @@ function Tracking() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+
+            {/* // Sender Marker */}
             {trackingDetails.senderLatitude > 0 && trackingDetails.senderLongitude > 0 && 
               <Marker position={[trackingDetails.senderLatitude, trackingDetails.senderLongitude]}>
                 <Popup>
@@ -162,6 +166,7 @@ function Tracking() {
               </Marker>
             }
 
+            {/* // Reipient Marker */}
             {trackingDetails.recipientLatitude > 0 && trackingDetails.recipientLongitude > 0 && 
               <Marker position={[trackingDetails.recipientLatitude, trackingDetails.recipientLongitude]}>
                 <Popup>
@@ -208,6 +213,35 @@ function Tracking() {
 
         </div>
       </div>
+
+      {
+        trackingDetails.senderLatitude > 0 && 
+        trackingDetails.senderLongitude > 0 && 
+        trackingDetails.recipientLatitude > 0 && 
+        trackingDetails.recipientLongitude > 0 && 
+
+        <>
+          <div style={{position: 'absolute', bottom: '7vh', left: '10vw', zIndex: '99999999'}}>
+            <a href={
+                'https://www.google.com/maps/dir/' + 
+                trackingDetails.senderLatitude + ',' + trackingDetails.senderLongitude + '/' + 
+                trackingDetails.recipientLatitude + ',' + trackingDetails.recipientLongitude + '/'
+              } target="_blank">
+              <img height='75px' width='75px' src={GoogleMapsIcon}/> 
+            </a>
+          </div>
+
+          <div style={{position: 'absolute', bottom: '8vh', left: '14.5vw', zIndex: '99999999'}}>
+            <a href={
+                'https://www.waze.com/ul?ll=' + 
+                trackingDetails.recipientLatitude + ',' + trackingDetails.recipientLongitude + '&navigate=yes&from=' +
+                trackingDetails.senderLatitude + ',' + trackingDetails.senderLongitude 
+              } target="_blank">
+              <img height='60px' width='60px' src={WazeIcon} style={{borderRadius: '7px'}}/> 
+            </a>
+          </div>
+        </>
+      }
     </>
   )
 }
