@@ -14,6 +14,7 @@ function Header() {
     await axiosClient.post('/logout');
     setCurrentUser({});
     setUserToken(null);
+    localStorage.clear();
   };
 
   const goToProfile = () => {

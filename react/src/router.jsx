@@ -9,6 +9,8 @@ import Tracking from "./components/Tracking";
 import Profile from "./components/Profile";
 import FinalizeAWB from "./components/FinalizeAWB";
 import PrintAWB from "./components/PrintAWB";
+import Admin from "./components/Admin";
+import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 
 const router = createBrowserRouter([
     {
@@ -42,6 +44,14 @@ const router = createBrowserRouter([
             {
                 path: 'print',
                 element: <PrintAWB />
+            },
+            {
+                path: 'admin',
+                element: (
+                    <ProtectedAdminRoute>
+                        <Admin />
+                    </ProtectedAdminRoute>
+                )
             },
         ]
     },

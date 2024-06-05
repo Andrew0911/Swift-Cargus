@@ -28,6 +28,7 @@ export default function Login() {
           setIsLoading(false);
           setCurrentUser(data.user)
           setUserToken(data.token)
+          localStorage.setItem('isAdmin', data.isAdmin);
         } catch (error) {
           setIsLoading(false);
           if (error.response.data.error) {

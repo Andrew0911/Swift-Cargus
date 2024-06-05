@@ -15,6 +15,7 @@ class Client extends Model
         'Name',
         'Phone',
         'Email',
-        'Contact_Person'
+        'Contact_Person',
+        'isAdmin'
     ];
 }

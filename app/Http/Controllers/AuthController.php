@@ -45,11 +45,13 @@ class AuthController extends Controller
             ], 500);
         }
         $user = Auth::user();
+        $isAdmin =  Client::where('UserId', $user->id)->value('isAdmin') == 1 ? true : false;
         $token = $user->createToken('main')->plainTextToken;
 
         return response([
             'user' => $user,
-            'token' => $token
+            'token' => $token,
+            'isAdmin' => $isAdmin
         ]);
     }
 
