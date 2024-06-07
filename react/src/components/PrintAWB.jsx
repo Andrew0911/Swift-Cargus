@@ -21,6 +21,7 @@ function PrintAWB() {
   const contentToPrint = useRef(null);
   const [isOpeningPrintingInterface, setIsOpeningPrintingInterface] = useState(false);
   const [awbPrintErrors, setAwbPrintErrors] = useState({});
+  const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin'));
 
 
   const handlePrint = useReactToPrint({
@@ -55,7 +56,8 @@ function PrintAWB() {
     ev.preventDefault();
     try {
       const { data: awbDetails } = await axiosClient.get('/awb/print-details', { params: {
-        awb: awb
+        awb: awb,
+        isAdmin: isAdmin
       }});
       setAwbPrintDetails(awbDetails);
       setIsLoading(false);

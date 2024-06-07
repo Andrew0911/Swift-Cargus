@@ -21,6 +21,7 @@ function Tracking() {
   const [statusColor, setStatusColor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [awbTrackingErrors, setAwbTrackingErrors] = useState({});
+  const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin'));
 
   useEffect(() => {
     const updateAwb = async () => {
@@ -50,7 +51,8 @@ function Tracking() {
     ev.preventDefault();
     try {
       const { data: awbDetails } = await axiosClient.get('/awb/tracking-details', { params: {
-        awb: awb
+        awb: awb,
+        isAdmin: isAdmin
       }});
       setTrackingDetails(awbDetails);
       setIsLoading(false);

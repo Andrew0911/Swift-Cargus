@@ -11,11 +11,14 @@ export default function Dashboard() {
   const [tableData, setTableData] = useState([]);
   const [chartData, setChartData] = useState([]);
   const colors = ["#135a76", "orange", "green"];
+  const [isAdmin, setIsAdmin] = useState(localStorage.getItem('isAdmin'));
 
   useEffect(() => {
     const fetchAllRows = async () => {
         try {
-            const { data: fetchedRows } = await axiosClient.get('/awb/get-awbs');
+            const { data: fetchedRows } = await axiosClient.get('/awb/get-awbs', {
+              params: { isAdmin: isAdmin }
+            });
             setTableData(fetchedRows);
             setIsLoading(false);
         } catch (error) {
@@ -28,7 +31,9 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchAllStatuses = async () => {
         try {
-            const { data: allStatuses } = await axiosClient.get('/awb/get-each-status-awb-count');
+            const { data: allStatuses } = await axiosClient.get('/awb/get-each-status-awb-count', {
+              params: { isAdmin: isAdmin }
+            });
             if(allStatuses['Processed'] + allStatuses['Shipment in delivery'] + allStatuses['Delivered'] == 0){
               setChartData([]);
             } else {

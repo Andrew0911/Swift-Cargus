@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AdminRequest;
 use App\Http\Requests\EstimateCostRequest;
 use App\Http\Requests\GenerateAwbRequest;
 use App\Http\Requests\PrintAwbRequest;
@@ -112,13 +113,12 @@ class AwbController extends Controller
         return response(['awbNumber' => $awbNumber]);
     }
 
-    public function getClientAwbs() : Response
+    public function getClientAwbs(AdminRequest $request) : Response
     {
         $userId = auth()->user()->id;
         $clientId = ClientRepository::getClientId($userId);
-        $awbs = Awb::where('ClientId', $clientId)
-                    ->orderByDesc('Date')
-                    ->get();
+        $awbs = $request->isAdmin === 'true' ? Awb::orderByDesc('Date')->get() :
+                                               Awb::where('ClientId', $clientId)->orderByDesc('Date')->get();
 
         foreach($awbs as $awb)
         {
@@ -147,7 +147,7 @@ class AwbController extends Controller
         return response($formattedAwbs ?? []);
     }
 
-    public function getEachStatusAwbCount() : Response
+    public function getEachStatusAwbCount(AdminRequest $request) : Response
     {
         $userId = auth()->user()->id;
         $clientId = ClientRepository::getClientId($userId);
@@ -156,9 +156,8 @@ class AwbController extends Controller
         $countedStatuses = [];
         foreach($allStatuses as $status)
         {
-            $numberOfAwbsWithThatStatus = Awb::where('ClientId', $clientId)
-                                              ->where('StatusId', $status->StatusId)
-                                              ->count();
+            $numberOfAwbsWithThatStatus = $request->isAdmin === 'true' ? Awb::where('StatusId', $status->StatusId)->count() :
+                                                                         Awb::where('ClientId', $clientId)->where('StatusId', $status->StatusId)->count();
             $countedStatuses[$status->Name] = $numberOfAwbsWithThatStatus;
         }
         return response($countedStatuses);
@@ -197,7 +196,9 @@ class AwbController extends Controller
     {
         $userId = auth()->user()->id;
         $clientId = ClientRepository::getClientId($userId);
-        $awb = Awb::where('ClientId', $clientId)->where('Awb', $request->awb)->first();
+        
+        $awb = $request->isAdmin === 'true' ? Awb::where('Awb', $request->awb)->first() :
+                                   Awb::where('ClientId', $clientId)->where('Awb', $request->awb)->first();
 
         if(!$awb){
             return response(['message' => 'This AWB is not associated with your account']);
@@ -252,7 +253,9 @@ class AwbController extends Controller
     {
         $userId = auth()->user()->id;
         $clientId = ClientRepository::getClientId($userId);
-        $awb = Awb::where('ClientId', $clientId)->where('Awb', $request->awb)->first();
+
+        $awb = $request->isAdmin === 'true' ? Awb::where('Awb', $request->awb)->first() :
+                                              Awb::where('ClientId', $clientId)->where('Awb', $request->awb)->first();
 
         if(!$awb){
             return response(['message' => 'This AWB is not associated with your account']);
