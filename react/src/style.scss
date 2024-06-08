@@ -1176,6 +1176,39 @@
     height: 5.5vh;
 }
 
+.gaugesContainer{
+
+    //background-color: lightgray;
+    margin: 2vh 2vw;
+    width: 88vw;
+    height: 38vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1vh 1vw;
+    padding-top: 0;
+    gap: 3vw;
+
+    .gauge{
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        border-radius: 30px;
+        width: calc(88vw / 3);
+        height: 32vh;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur;
+
+        .gauge-title{
+            color: var(--yellow-color);
+            font-size: 24px;
+
+        }
+    }
+}
+
 
 
 body {

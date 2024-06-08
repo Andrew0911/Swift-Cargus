@@ -19,6 +19,10 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::prefix('awb')->group(
         base_path('routes/awb.php'),
     );
+
+    Route::prefix('admin')->group(
+        base_path('routes/admin.php'),
+    );
 });
 
 Route::post('/register', [AuthController::class, 'register']);

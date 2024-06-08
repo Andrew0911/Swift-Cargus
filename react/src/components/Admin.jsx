@@ -1,52 +1,84 @@
-import React from 'react'
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-
-const createData = (name, calories, fat, carbs, protein) => {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData('1592833092', '2024-05-31 00:06:59', 'Standard', 'None', 40.95),
-  createData('1592833092', '2024-05-31 00:06:59', 'Standard', 'Opening For Delivery, Fragile Packaging', 9.56),
-  createData('1592833092', '2024-05-31 00:06:59', 'Standard', 'None', 89.01),
-  createData('1592833092', '2024-05-31 00:06:59', 'Standard', 'Opening For Delivery, Fragile Packaging', 32.19),
-  createData('1592833092', '2024-05-31 00:06:59', 'Standard', 'None', 24.67),
-];
+import React, { useEffect, useState } from 'react'
+import GaugeComponent from 'react-gauge-component'
+import { Helmet } from 'react-helmet';
+import SwiftCargusLogo from '../img/SwiftCargusLogo.png'
+import axiosClient from '../axios';
 
 function Admin() {
+
+  const [currentMonthAwbCount, setCurrentMonthAwbCount] = useState(0);
+  const [currentMonthAwbValue, setCurrentMonthAwbValue] = useState(0);
+
+  const awbsPerMonthTarget = '100';
+  const incomePerMonthTarget = '2000'
+
+  // Effect to fetch awbs generated this month
+  useEffect(() => {
+    const fetchAwbsForThisMonth = async () => {
+      try {
+        const { data: awbsForThisMonth } = await axiosClient.get('/admin/current-month-awbs');
+        setCurrentMonthAwbCount(awbsForThisMonth.awbs);
+        setCurrentMonthAwbValue(awbsForThisMonth.totalValue);
+      } catch (error) {
+        console.error('Error fetching current month AWBs: ', error);
+      }
+    };
+    fetchAwbsForThisMonth();
+  }, []);
+
   return (
+    <>
+      <Helmet>
+          <title>Admin</title>
+          <link rel="icon" href={SwiftCargusLogo} type="image/png" />
+      </Helmet>
 
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '90vh', paddingLeft: '2vw', paddingRight: '2vw'}}>
+      <div className='gaugesContainer'>
 
-      <div style={{ width: '89vw'}}>
-        <Table>
+        <div className='gauge'>
+          <div className='gauge-title'> This month's AWB target </div>
+          <GaugeComponent 
+            style={{width: '20vw'}}
+            value={currentMonthAwbCount}
+            maxValue={awbsPerMonthTarget}
+            arc={{
+                colorArray: ['red', '#135a76', 'var(--yellow-color)', 'green'],
+                subArcs: [
+                    { limit: awbsPerMonthTarget / 4, tooltip: { text: 'Very Low', style: {fontFamily: 'Quicksand'}}, showTick: true },
+                    { limit: 2 * awbsPerMonthTarget / 4, tooltip: { text: 'Low', style: {fontFamily: 'Quicksand'}}, showTick: true },
+                    { limit: 3 * awbsPerMonthTarget / 4,  tooltip: { text: 'Medium', style: {fontFamily: 'Quicksand'}}, showTick: true},
+                    { limit: awbsPerMonthTarget, tooltip: { text: 'Good', style: {fontFamily: 'Quicksand'}}},
+                  ]
+            }}
+            />
+        </div>
 
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{fontFamily: 'Quicksand', color: 'var(--yellow-color)', fontSize: '18px'}} align="center">AWB</TableCell>
-              <TableCell sx={{fontFamily: 'Quicksand', color: 'var(--yellow-color)', fontSize: '18px'}} align="center">Date</TableCell>
-              <TableCell sx={{fontFamily: 'Quicksand', color: 'var(--yellow-color)', fontSize: '18px'}} align="center">Service Type</TableCell>
-              <TableCell sx={{fontFamily: 'Quicksand', color: 'var(--yellow-color)', fontSize: '18px'}} align="center">Options</TableCell>
-              <TableCell sx={{fontFamily: 'Quicksand', color: 'var(--yellow-color)', fontSize: '18px'}} align="center">Value</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
+        <div className='gauge'>
+          <div className='gauge-title'> This month's income target </div>
+          <GaugeComponent 
+            style={{width: '20vw'}}
+            value={currentMonthAwbValue}
+            maxValue={incomePerMonthTarget}
+            arc={{
+                colorArray: ['red', '#135a76', 'var(--yellow-color)', 'green'],
+                subArcs: [
+                    { limit: incomePerMonthTarget / 4, tooltip: { text: 'Very Low', style: {fontFamily: 'Quicksand'}}, showTick: true },
+                    { limit: 2 * incomePerMonthTarget / 4, tooltip: { text: 'Low', style: {fontFamily: 'Quicksand'}}, showTick: true },
+                    { limit: 3 * incomePerMonthTarget / 4,  tooltip: { text: 'Medium', style: {fontFamily: 'Quicksand'}}, showTick: true},
+                    { limit: incomePerMonthTarget, tooltip: { text: 'Good', style: {fontFamily: 'Quicksand'}}},
+                  ]
+            }}
+            />
+           
+        </div>
 
-            {rows.map((row) => (
-              <TableRow>
-                <TableCell sx={{fontFamily: 'Quicksand', color: '#135a76', fontSize: '16px'}} align="center">{row.name}</TableCell>
-                <TableCell sx={{fontFamily: 'Quicksand'}} align="center">{row.calories}</TableCell>
-                <TableCell sx={{fontFamily: 'Quicksand'}} align="center">{row.fat}</TableCell>
-                <TableCell sx={{fontFamily: 'Quicksand'}} align="center">{row.carbs}</TableCell>
-                <TableCell sx={{fontFamily: 'Quicksand'}} align="center">{row.protein}</TableCell>
-              </TableRow>
-            ))}
-
-          </TableBody>
-
-        </Table>
+        <div className='gauge'>
+          {/* <div className='gauge-title'> Target Number of AWBs </div> */}
+          
+        </div>
+        
       </div>
-    </div>
+    </>
   );
 }
 

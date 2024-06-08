@@ -298,4 +298,18 @@ class AwbController extends Controller
         ]);
     }
 
+    public function getCurrentMonthAWBs() : Response
+    {
+        $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
+        $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
+
+        $thisMonthAWBs = Awb::whereBetween('date', [$startOfMonth, $endOfMonth])
+                    ->selectRaw('COUNT(*) as currentMonthCount, SUM(value) as totalValue')
+                    ->first();
+
+        return response()->json([
+            'awbs' => $thisMonthAWBs->currentMonthCount,
+            'totalValue' => $thisMonthAWBs->totalValue
+        ]);
+    }
 }
