@@ -1063,14 +1063,13 @@
     margin-left: 3.5vw;
     gap: 5vh;
     width: 50vw;
+}
 
-    .search{
-        display: flex;
-        justify-content: center; 
-        align-items: center;
-        gap: 1vw;
-    }
-
+.search{
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 1vw;
 }
 
 .tracking-details-container{
@@ -1178,7 +1177,6 @@
 
 .gaugesContainer{
 
-    //background-color: lightgray;
     margin: 2vh 2vw;
     width: 88vw;
     height: 38vh;
@@ -1200,16 +1198,61 @@
         height: 32vh;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.18);
         backdrop-filter: blur;
-
-        .gauge-title{
-            color: var(--yellow-color);
-            font-size: 24px;
-
-        }
     }
 }
 
+.gauge-title{
+    color: var(--yellow-color);
+    font-size: 24px;
+}
 
+.bottom-container{
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2vw;
+    margin-right: 2vw;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    width: 88vw;
+    height: 45vh;
+    gap: 3vw;
+
+    .small-bottom-container{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur;
+        width: calc(88vw / 2);
+        height: 40vh;
+        border-radius: 30px;
+        padding-top: 2vh;
+    }
+}
+
+.available-statuses-container{
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(88vw / 2 - 3vw);
+    gap: 2vw;
+    
+    .status-container{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 11vw;
+        height: 5vh;
+        background-color: hsl(211, 33%, 95%);
+        color: #135a76;
+        border: 1px solid #135a76;
+        border-radius: 5px;
+        padding: 0.5vh 0.5vw;
+    }
+}
 
 body {
     margin: 0;

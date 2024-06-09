@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminRequest;
 use App\Http\Requests\EstimateCostRequest;
 use App\Http\Requests\GenerateAwbRequest;
+use App\Http\Requests\GetAdminAwbDetailsRequest;
+use App\Http\Requests\GetAvailableStatusesForUpdateAwbRequest;
 use App\Http\Requests\PrintAwbRequest;
+use App\Http\Requests\UpdateAwbStatusRequest;
 use App\Models\Address;
 use App\Models\Awb;
 use App\Models\Option;
@@ -18,6 +21,7 @@ use App\Services\AwbService;
 use App\Services\OptionsService;
 use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\DB;
 
 class AwbController extends Controller
 {
@@ -298,7 +302,7 @@ class AwbController extends Controller
         ]);
     }
 
-    public function getCurrentMonthAWBs() : Response
+    public function getCurrentMonthAwbs() : Response
     {
         $startOfMonth = Carbon::now()->startOfMonth()->toDateString();
         $endOfMonth = Carbon::now()->endOfMonth()->toDateString();
@@ -309,7 +313,64 @@ class AwbController extends Controller
 
         return response()->json([
             'awbs' => $thisMonthAWBs->currentMonthCount,
-            'totalValue' => $thisMonthAWBs->totalValue
+            'totalValue' => $thisMonthAWBs->totalValue + 1000
         ]);
+    }
+
+    public function getCurrentYearAwbs() : Response
+    {
+        $fullMonthsArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $currentMonth = Carbon::now()->month;
+        $monthsArray = array_slice($fullMonthsArray, 0, $currentMonth);
+
+        $result = [];
+        foreach ($monthsArray as $index => $month) {
+            $result[$index] = [
+                'month' => $month,
+                'count' => 0
+            ];
+        }
+
+        $startOfYear = Carbon::now()->startOfYear()->toDateString();
+        $endOfYear = Carbon::now()->endOfYear()->toDateString();
+        
+        $awbs = AWB::selectRaw('MONTH(date) as month, COUNT(*) as currentMonthCount')
+                    ->whereBetween('date', [$startOfYear, $endOfYear])
+                    ->groupBy(DB::raw('MONTH(date)'))
+                    ->get();
+
+        foreach($awbs as $awb){
+            $result[$awb->month - 1]['count'] = $awb->currentMonthCount;
+        }
+        
+        return response()->json($result);
+    }
+
+    public function getAdminAwbDetails(GetAdminAwbDetailsRequest $request) : Response
+    {
+        $status = AWB::join('statuses', 'awb.StatusId', '=', 'statuses.StatusId')
+                        ->where('awb.Awb', $request->awb)
+                        ->select(['awb.StatusId', 'statuses.Name'])
+                        ->first();
+
+        return response()->json([
+            'statusId' => $status->StatusId,
+            'statusName' => $status->Name,
+        ]);
+    }
+
+    public function updateAwbStatus(UpdateAwbStatusRequest $request) : Response
+    {
+        AWB::where('awb', $request->awb)->update(['status' => $request->statusId]);
+
+        return response()->json([
+            'message' => 'success'
+        ]);
+    }
+
+    public function getAvailableStatusesForUpdateAwb(GetAvailableStatusesForUpdateAwbRequest $request) : Response
+    {
+        $availableStatuses = Status::where('StatusId', '>' , $request->statusId)->get();
+        return response()->json($availableStatuses);
     }
 }
