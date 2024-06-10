@@ -311,9 +311,15 @@ class AwbController extends Controller
                     ->selectRaw('COUNT(*) as currentMonthCount, SUM(value) as totalValue')
                     ->first();
 
+        $thisMonthDeliveredAWBs = Awb::whereBetween('date', [$startOfMonth, $endOfMonth])
+                    ->where('StatusId', 4)
+                    ->selectRaw('SUM(PackageNo) as totalPackages')
+                    ->first();
+
         return response()->json([
             'awbs' => $thisMonthAWBs->currentMonthCount,
-            'totalValue' => $thisMonthAWBs->totalValue + 1000
+            'totalValue' => $thisMonthAWBs->totalValue,
+            'packagesDelivered' => intval($thisMonthDeliveredAWBs->totalPackages)
         ]);
     }
 
@@ -361,7 +367,7 @@ class AwbController extends Controller
 
     public function updateAwbStatus(UpdateAwbStatusRequest $request) : Response
     {
-        AWB::where('awb', $request->awb)->update(['status' => $request->statusId]);
+        AWB::where('awb', $request->awb)->update(['StatusId' => $request->statusId]);
 
         return response()->json([
             'message' => 'success'

@@ -14,17 +14,22 @@ function Admin() {
 
   const [currentMonthAwbCount, setCurrentMonthAwbCount] = useState(0);
   const [currentMonthAwbValue, setCurrentMonthAwbValue] = useState(0);
+  const [currentMonthpackagesDelivered, setCurrentMonthpackagesDelivered] = useState(0);
   const [currentYearAWBs, setCurrentYearAWBs] = useState({});
   const [awb, setAwb] = useState('');
   const [awbDetails, setAwbDetails] = useState({});
   const [statusColor, setStatusColor] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSearchingAwb, setIsSearchingAwb] = useState(false);
+  const [isUpdatingAwbStatus, setIsUpdatingAwbStatus] = useState(false);
   const [awbErrors, setAwbErrors] = useState({});
+  const [awbStatusUpdateErrors, setAwbStatusUpdateErrors] = useState({});
   const [availableStatuses, setAvailableStatuses] = useState([]);
   const [selectedStatusId, setSelectedStatusId] = useState(0);
+  const [refetchCurrentMonthAwbs, setRefetchCurrentMonthAwbs] = useState(false);
 
-  const awbsPerMonthTarget = '100';
-  const incomePerMonthTarget = '2000'
+  const awbsPerMonthTarget = '200';
+  const incomePerMonthTarget = '8000'
+  const packagesDeliveredPerMonthTarget = '500'
 
   // Effect to fetch awbs generated this month
   useEffect(() => {
@@ -33,14 +38,15 @@ function Admin() {
         const { data: awbsForThisMonth } = await axiosClient.get('/admin/current-month-awbs');
         setCurrentMonthAwbCount(awbsForThisMonth.awbs);
         setCurrentMonthAwbValue(awbsForThisMonth.totalValue);
+        setCurrentMonthpackagesDelivered(awbsForThisMonth.packagesDelivered);
       } catch (error) {
         console.error('Error fetching current month AWBs: ', error);
       }
     };
     fetchAwbsForThisMonth();
-  }, []);
+  }, [refetchCurrentMonthAwbs]);
 
-  // Effect to fetch awbs generated this month
+  // Effect to fetch awbs generated this year
   useEffect(() => {
     const fetchAwbsForThisYear = async () => {
       try {
@@ -68,8 +74,9 @@ function Admin() {
   // function to search fo AWB
   const searchForAWB = async (ev) => {
 
-    setIsLoading(true); 
+    setIsSearchingAwb(true); 
     setAwbErrors({});
+    setAwbStatusUpdateErrors({});
     setAwbDetails({});
     setAvailableStatuses([]);
     ev.preventDefault();
@@ -78,7 +85,7 @@ function Admin() {
         awb: awb
       }});
       setAwbDetails(awbDetails);
-      setIsLoading(false);
+      setIsSearchingAwb(false);
 
       if(awbDetails.statusName == 'Processed'){
         setStatusColor('#135a76');
@@ -102,7 +109,7 @@ function Admin() {
         }
       }
     } catch (error) {
-      setIsLoading(false);
+      setIsSearchingAwb(false);
       console.error('Error searching the AWB', error);
 
       if(error.response.data.errors) {
@@ -134,12 +141,70 @@ function Admin() {
     });
   }
 
-  // effect for showing errors
+  // effect for showing AWB search errors
   useEffect(() => {
     if(Object.keys(awbErrors).length > 0) {
       toastError(awbErrors.awb[0]);
     } 
   }, [awbErrors]);
+
+  // effect for showing AWB status update errors
+  useEffect(() => {
+    if(Object.keys(awbStatusUpdateErrors).length > 0) {
+      if(awbStatusUpdateErrors.statusId[0]){
+        toastError('Please select a status in order to update the AWB.')
+      }
+    } 
+  }, [awbStatusUpdateErrors]);
+
+  //function to update the AWB status
+  const updateAwbStatus = async (ev) => {
+    setAwbErrors({});
+    setAwbStatusUpdateErrors({});
+    setIsUpdatingAwbStatus(true); 
+    ev.preventDefault();
+    try {
+      const { data: data } = await axiosClient.post('/admin/update-awb-status', {
+        awb: awb,
+        statusId: selectedStatusId
+      });
+      setIsUpdatingAwbStatus(false); 
+      setAwbDetails({});
+      setAvailableStatuses([]);
+      setAwb('');
+
+      if(data.message === 'success'){
+        toast.success('AWB status updated successfully.', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          style: {
+            height: '10vh',
+            width: '20vw',
+            marginLeft: '-4vw',
+            paddingLeft: '1vw',
+            fontFamily: 'Quicksand, sans serif',
+            fontSize: '19px'
+          }
+        });
+        setRefetchCurrentMonthAwbs(!refetchCurrentMonthAwbs);
+      }
+
+    } catch (error) {
+      setIsUpdatingAwbStatus(false); 
+      console.error('Error updating AWB status :', error);
+
+      if(error.response.data.errors) {
+        const finalErrors = error.response.data.errors;
+        setAwbStatusUpdateErrors(finalErrors);
+      }
+    }
+  }
   
   return (
     <>
@@ -154,9 +219,9 @@ function Admin() {
         
         {/* Gauge for this month's AWB target */}
         <div className='gauge'>
-          <div className='gauge-title'> This month's AWB target </div>
+          <div className='gauge-title'> This month's AWBs </div>
           <GaugeComponent 
-            style={{width: '20vw'}}
+            className='gauge-component-class'
             value={currentMonthAwbCount}
             maxValue={awbsPerMonthTarget}
             arc={{
@@ -196,14 +261,30 @@ function Admin() {
               ]
             }}
             pointer={{elastic: true}}
+            labels={{
+              valueLabel: {
+                style: {
+                  fill: '#135a76',
+                  textShadow: 'none',
+                  fontSize: '40px'
+                }
+              },
+              tickLabels: {
+                defaultTickValueConfig: {
+                  style: {
+                    fontSize: "16px"
+                  }
+                }
+              }
+            }}
           />
         </div>
 
         {/* Gauge for this month's income target */}
         <div className='gauge'>
-          <div className='gauge-title'> This month's income target </div>
+          <div className='gauge-title'> This month's income (RON) </div>
           <GaugeComponent 
-            style={{width: '20vw'}}
+            className='gauge-component-class'
             value={currentMonthAwbValue}
             maxValue={incomePerMonthTarget}
             arc={{
@@ -243,12 +324,86 @@ function Admin() {
               ]
             }}
             pointer={{elastic: true}}
+            labels={{
+              valueLabel: {
+                style: {
+                  fill: '#135a76',
+                  textShadow: 'none',
+                  fontSize: '40px'
+                }
+              },
+              tickLabels: {
+                defaultTickValueConfig: {
+                  style: {
+                    fontSize: "16px"
+                  }
+                }
+              }
+            }}
           />
         </div>
 
-        {/* Gauge for  */}
+        {/* Gauge for this month's packages delivered */}
         <div className='gauge'>
-          <div className='gauge-title'> This month's income target </div>
+          <div className='gauge-title'> This month's packages delivered </div>
+          <GaugeComponent 
+            className='gauge-component-class'
+            value={currentMonthpackagesDelivered}
+            maxValue={packagesDeliveredPerMonthTarget}
+            arc={{
+              colorArray: ['red', '#135a76', 'var(--yellow-color)', 'green'],
+              subArcs: [
+                { 
+                  limit: packagesDeliveredPerMonthTarget / 4,
+                  tooltip: { 
+                    text: 'Very Low',
+                    style: {fontFamily: 'Quicksand'}
+                  }, 
+                  showTick: true 
+                },
+                { 
+                  limit: 2 * packagesDeliveredPerMonthTarget / 4,
+                  tooltip: { 
+                    text: 'Low',
+                    style: {fontFamily: 'Quicksand'}
+                  }, 
+                  showTick: true 
+                },
+                { 
+                  limit: 3 * packagesDeliveredPerMonthTarget / 4, 
+                  tooltip: {
+                    text: 'Medium',
+                    style: {fontFamily: 'Quicksand'}
+                  },
+                  showTick: true
+                },
+                { 
+                  limit: packagesDeliveredPerMonthTarget,
+                  tooltip: {
+                    text: 'Good',
+                    style: {fontFamily: 'Quicksand'}
+                  }
+                },
+              ]
+            }}
+            pointer={{elastic: true}}
+            labels={{
+              valueLabel: {
+                style: {
+                  fill: '#135a76',
+                  textShadow: 'none',
+                  fontSize: '40px'
+                }
+              },
+              tickLabels: {
+                defaultTickValueConfig: {
+                  style: {
+                    fontSize: "16px"
+                  }
+                }
+              }
+            }}
+          />
         </div>
         
       </div>
@@ -271,7 +426,7 @@ function Admin() {
               
             <button className='dynamic-button' onClick={(ev) => searchForAWB(ev)} disabled={awb.length !== 10}> 
               {
-                isLoading ? 
+                isSearchingAwb ? 
                 <div style={{marginTop: '5px'}}> 
                 <ClipLoader
                   color = 'white'
@@ -284,7 +439,7 @@ function Admin() {
               }
             </button>
           </div>
-          <br/> <br/>
+          <br/>
           {awbDetails.statusId && 
             <>
               <div style={{fontSize: '22px', color: 'var(--yellow-color)'}}> Current status : &nbsp; 
@@ -295,28 +450,47 @@ function Admin() {
           }
 
           {availableStatuses.length > 0 && 
-            <div className='available-statuses-container'> 
-              {availableStatuses.map((status, index) => (
-                <div key={status.StatusId} className='status-container'>
-                  {status.Name} 
-                  &nbsp;
-                  <Checkbox
-                    checked={selectedStatusId === status.StatusId}
-                    onChange={(ev) => { 
-                      setSelectedStatusId(prevId => prevId === status.StatusId ? 0 : status.StatusId);
-                    }}
-                    sx={{ '& .MuiSvgIcon-root': { fontSize: 28, color: "#135a76" } }}
+            <>
+              <div className='available-statuses-container'> 
+                {availableStatuses.map((status, index) => (
+                  <div key={status.StatusId} className='status-container'>
+                    {status.Name} 
+                    &nbsp;
+                    <Checkbox
+                      checked={selectedStatusId === status.StatusId}
+                      onChange={(ev) => { 
+                        setSelectedStatusId(prevId => prevId === status.StatusId ? 0 : status.StatusId);
+                      }}
+                      sx={{ '& .MuiSvgIcon-root': { fontSize: 28, color: "#135a76" } }}
+                    /> 
+                  </div>
+                ))}
+              </div>
+
+              <br/> <br/>
+
+              <button className='dynamic-button' onClick={(ev) => updateAwbStatus(ev)}> 
+              {
+                isUpdatingAwbStatus ? 
+                <div style={{marginTop: '5px'}}> 
+                  <ClipLoader
+                    color = 'white'
+                    speedMultiplier={0.5}
+                    size={25}
                   /> 
                 </div>
-              ))}
-            </div>
+                :
+                'Update' 
+              }
+              </button>
+            </>
           }
-
+          
         </div> 
 
         {/* Graph for current year AWBs */}
         <div className='small-bottom-container'> 
-          <div className='gauge-title'> This years's AWBs </div> <br/>
+          <div className='gauge-title'> This year's AWBs </div> <br/>
           <Box sx={{ flexGrow: 1, fontFamily: "Quicksand" }}>
             <LineChart width={770} height={300} data={currentYearAWBs} style={{ marginRight: '1vw', paddingRight: '1vw' }}>
               <XAxis dataKey="month" />
