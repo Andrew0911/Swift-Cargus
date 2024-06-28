@@ -57,19 +57,22 @@ class AddressController extends Controller
             'zipCode' => $zipCode
         ];
         
-        $options = [
-            'http' => [
-                'header' => 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
-            ]
-        ];
-        
-        $context = stream_context_create($options);
-        
-        $geocodeCenter = file_get_contents(
-            sprintf(self::GEOCODER_URL, urlencode($addressDetails['country']), urlencode($addressDetails['county']), urlencode($addressDetails['locality']), urlencode($addressDetails['street'])),
-            false,
-            $context
-        );
+        $ch = curl_init();
+        $url = sprintf(self::GEOCODER_URL, urlencode($addressDetails['country']), urlencode($addressDetails['county']), urlencode($addressDetails['locality']), urlencode($addressDetails['street']));
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'Accept-Language: en-US,en;q=0.9',
+            'Accept-Encoding: gzip, deflate, br',
+            'Connection: keep-alive',
+            'Upgrade-Insecure-Requests: 1'
+        ]);
+
+        $geocodeCenter = curl_exec($ch);
+        curl_close($ch);
 
         $geocoderResponse = json_decode($geocodeCenter);
         $latitude = 0;
